@@ -1,0 +1,6 @@
+
+class MyBlockProviders {
+  static getAllProvider() => [
+        
+      ];
+}
