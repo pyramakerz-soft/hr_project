@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-const noInternetConnection ='لا يوجد إتصال بالإنترنت';
+const noInternetConnection = 'No  internet connection';
 
 class Failure extends Equatable {
   final String message;

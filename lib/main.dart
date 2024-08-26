@@ -26,21 +26,24 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-        return ScreenUtilInit(
-          designSize: const Size(375, 812),
-          builder: (_, __) => MaterialApp.router(
-         
-            debugShowCheckedModeBanner: false,
-            title: 'Pyra makerz Atendance',
-            theme: ThemeData(
-              fontFamily: AppStrings.Poppins,
+        return MultiBlocProvider(
+          providers: MyBlockProviders.getAllProvider(),
+          child: ScreenUtilInit(
+            designSize: const Size(375, 812),
+            builder: (_, __) => MaterialApp.router(
+           
+              debugShowCheckedModeBanner: false,
+              title: 'Pyra makerz Atendance',
+              theme: ThemeData(
+                fontFamily: AppStrings.Poppins,
+              ),
+              routerDelegate: appRouter.delegate(),
+              routeInformationParser: appRouter.defaultRouteParser(),
+              // home: TrainingSettingsPage(
+              //   changeProgramModel: (User.initial()).getProgramFromUser(),
+          
+              // )
             ),
-            routerDelegate: appRouter.delegate(),
-            routeInformationParser: appRouter.defaultRouteParser(),
-            // home: TrainingSettingsPage(
-            //   changeProgramModel: (User.initial()).getProgramFromUser(),
-        
-            // )
           ),
         );
   }
