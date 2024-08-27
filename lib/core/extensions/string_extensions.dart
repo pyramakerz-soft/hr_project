@@ -156,7 +156,7 @@ extension StringExtensions on String {
           {num fontSize = AppFontSize.subTitle1,
           FontWeight fontWeight = FontWeight.w400,
           Color color = AppColors.textColor,
-          Color linkColor = AppColors.white,
+          Color linkColor = AppColors.textColor,
           TextAlign textAlgin = TextAlign.start,
           void Function(String)? launchFunction,
           void Function(String)? onTapHashtag,

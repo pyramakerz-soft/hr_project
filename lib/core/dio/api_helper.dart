@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:injectable/injectable.dart' as injectable;
@@ -14,14 +15,12 @@ import '../error/server_exception.dart';
 import 'my_dio.dart';
 
 const somethingWentWrong = 'Something went wrong';
-const token =
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3BlcnNvbmFsdHJhaW5lcmttbS5jb20vYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3MTIwNjg1MDIsIm5iZiI6MTcxMjA2ODUwMiwianRpIjoiQmNwODhZa2xYVjVHWWlqayIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.4JxB4JmzhaLUBXhf5rE4t4EyFQ3UY2ibgJflBWAtlY8';
 
-@injectable.Order(-3)
-@injectable.injectable
+@injectable.Order(-4)
+@injectable.lazySingleton
 class ApiHelper {
   final Dio? dio = DioClient().createDioClient();
-  ApiHelper({String? customBearerToken}) {
+  ApiHelper() {
     dio!.options.baseUrl = ApiConstants.baseUrl;
     var interceptor = InterceptorsWrapper(
       onRequest: (req, handler) async {
@@ -34,9 +33,8 @@ class ApiHelper {
         // final locale = LocaleKeys.app_locale.tr();
         // req.headers['Authorization'] = 'Bearer $token';
         if (authToken != null) {
-          req.headers["Authorization"] = customBearerToken == null
-              ? "Bearer $authToken"
-              : "Bearer $customBearerToken";
+          req.headers["Authorization"] = "Bearer $authToken";
+            
         }
         handler.next(req);
       },

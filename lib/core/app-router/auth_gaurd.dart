@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pyramakerz_atendnace/auth/domain/usecases/get_profile_usecase.dart';
+import 'package:pyramakerz_atendnace/features/auth/domain/usecases/get_profile_usecase.dart';
 import 'package:pyramakerz_atendnace/core/app-preferances/app_preferances.dart';
 import 'package:pyramakerz_atendnace/core/app-router/app_router.gr.dart';
 import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
@@ -19,7 +19,7 @@ class AuthGuard extends AutoRouteGuard {
         Fluttertoast.showToast(msg: l.message);
         resolver.next(true);
       }, (r) {
-        resolver.redirect(const DashboardRoute());
+        resolver.redirect( DashboardRoute(user: r));
       });
     } else {
       resolver.next(true);

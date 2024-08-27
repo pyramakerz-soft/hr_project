@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:pyramakerz_atendnace/auth/persentation/login/login_page.dart';
+import 'package:pyramakerz_atendnace/features/auth/persentation/login/login_page.dart';
 import 'package:pyramakerz_atendnace/core/app-router/app_router.gr.dart';
 import 'package:pyramakerz_atendnace/core/app-router/auth_gaurd.dart';
 

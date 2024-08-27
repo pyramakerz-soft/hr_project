@@ -8,16 +8,18 @@ class ApiConstants {
 
   static const String api = "api";
 
-  static const String apiUrl = '$baseUrl/$api';
 
+    static const String base = "127.0.0.1:8000";
 
-  static const String authBase = '$apiUrl/auth';
+  static const baseURL = 'http://$base/api';
+
+  static const String authBase = '$baseURL/auth';
 
   static const String login = '$authBase/login';
   static const String userbytoken = '$authBase/user_by_token';
 
 
-  static const String clockin = '$apiUrl/clock_in';
-  static const String clockout = '$apiUrl/clock_out';
+  static const String clockin = '$baseURL/clock_in';
+  static const String clockout = '$baseURL/clock_out';
 
 }
