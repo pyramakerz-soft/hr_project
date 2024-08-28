@@ -65,6 +65,7 @@ class ClockContainer extends StatelessWidget {
             margin: 0,
             fun: () {
                             showDialog(
+                              
                 context: context,
                 builder: (context) => ClockInDialog(user: user,),
               );

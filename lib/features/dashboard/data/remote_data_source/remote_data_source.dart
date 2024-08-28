@@ -26,7 +26,7 @@ class DashboardRemoteDataSource extends BaseDashboardRemoteDataSource {
 
     return response.fold(
       (left) => throw left,
-      (right) => ClockResponse.fromJson(right.data),
+      (right) => ClockResponse.fromMap(right.data),
     );
   }
 
@@ -40,7 +40,7 @@ class DashboardRemoteDataSource extends BaseDashboardRemoteDataSource {
 
     return response.fold(
       (left) => throw left,
-      (right) => ClockResponse.fromJson(right.data),
+      (right) => ClockResponse.fromMap(right.data),
     );
   }
 

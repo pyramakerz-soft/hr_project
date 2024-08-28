@@ -1,24 +1,33 @@
-import 'dart:convert';
-
 class ClockRequest {
+  final double latitude;
+  final double longitude;
+  final String locationType;
+  final DateTime clockIn;
 
- final String latitude;
- final String longitude;
   ClockRequest({
-   required this.latitude,
-   required this.longitude,
+    required this.latitude,
+    required this.longitude,
+    required this.locationType,
+    required this.clockIn,
   });
 
-
+  // Convert Location object to a Map (useful for JSON serialization)
   Map<String, dynamic> toMap() {
     return {
       'latitude': latitude,
       'longitude': longitude,
+      'location_type': locationType,
+      'clock_in': clockIn.toUtc().toIso8601String(),
     };
   }
 
- 
-
-  String toJson() => json.encode(toMap());
-
+  // Create a Location object from a Map (useful for JSON deserialization)
+  factory ClockRequest.fromMap(Map<String, dynamic> map) {
+    return ClockRequest(
+      latitude: map['latitude'],
+      longitude: map['longitude'],
+      locationType: map['location_type'],
+      clockIn: DateTime.parse(map['clock_in']).toUtc(),
+    );
+  }
 }
