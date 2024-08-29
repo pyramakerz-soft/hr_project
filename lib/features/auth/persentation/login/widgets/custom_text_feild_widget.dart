@@ -35,15 +35,16 @@ class _CustomFormFieldState extends State<CustomFormField> {
       controller: widget.controller,
       obscureText: _obscureText,
       validator: widget.validator,
+      cursorColor: AppColors.mainColor,
       decoration: InputDecoration(
         hintText: widget.hintText,
         filled: true,
         hintStyle: TextStyle(
           fontSize: 12.sp,
           fontWeight: FontWeight.w400,
-          color: AppColors.atendanceGreyDark,
+          color: AppColors.grey,
         ),
-        fillColor: AppColors.atendanceGrey,
+        fillColor: AppColors.lightGrey,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide.none,
@@ -56,7 +57,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
             ? IconButton(
                 icon: Icon(
                   _obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: AppColors.atendanceGreyDark,
+                  color: AppColors.grey,
                 ),
                 onPressed: () {
                   setState(() {
