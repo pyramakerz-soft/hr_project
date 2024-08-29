@@ -147,9 +147,7 @@ extension StringExtensions on String {
   Widget errText() => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: toSubTitle(
-            textAlgin: TextAlign.start,
-            color: AppColors.ellired,
-            fontSize: 16.sp),
+            textAlgin: TextAlign.start, color: AppColors.red, fontSize: 16.sp),
       );
 
   Widget toSubTitle(
