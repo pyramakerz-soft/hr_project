@@ -29,39 +29,39 @@ class ClockResponse {
 }
 
 class Clock {
-  final DateTime clockIn;
+  final DateTime? clockIn;
   final DateTime? clockOut;
   final int? duration;
-  final int userId;
+  final int? userId;
   final int? locationId;
-  final String locationType;
-  final DateTime updatedAt;
-  final DateTime createdAt;
-  final int id;
+  final String? locationType;
+  final DateTime? updatedAt;
+  final DateTime? createdAt;
+  final int? id;
 
   Clock({
     required this.clockIn,
     this.clockOut,
     this.duration,
-    required this.userId,
+    this.userId,
     this.locationId,
-    required this.locationType,
-    required this.updatedAt,
-    required this.createdAt,
-    required this.id,
+    this.locationType,
+    this.updatedAt,
+    this.createdAt,
+    this.id,
   });
 
   // Convert Clock object to a Map (useful for JSON serialization)
   Map<String, dynamic> toMap() {
     return {
-      'clock_in': clockIn.toUtc().toIso8601String(),
+      'clock_in': clockIn?.toUtc().toIso8601String(),
       'clock_out': clockOut?.toUtc().toIso8601String(),
       'duration': duration,
       'user_id': userId,
       'location_id': locationId,
       'location_type': locationType,
-      'updated_at': updatedAt.toUtc().toIso8601String(),
-      'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
+      'created_at': createdAt?.toUtc().toIso8601String(),
       'id': id,
     };
   }
@@ -70,7 +70,9 @@ class Clock {
   factory Clock.fromMap(Map<String, dynamic> map) {
     return Clock(
       clockIn: DateTime.parse(map['clock_in']).toUtc(),
-      clockOut: map['clock_out'] != null ? DateTime.parse(map['clock_out']).toUtc() : null,
+      clockOut: map['clock_out'] != null
+          ? DateTime.parse(map['clock_out']).toUtc()
+          : null,
       duration: map['duration'],
       userId: map['user_id'],
       locationId: map['location_id'],
