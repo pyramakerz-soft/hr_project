@@ -28,45 +28,54 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-
   late User user;
   final LoginUseCase _loginUseCase;
   final GetProfileUsecase _getProfile;
   final AppPreferences _appPreferences;
 
   Future<String?> _getId() async {
-  var deviceInfo = DeviceInfoPlugin();
-  if (Platform.isIOS) { // import 'dart:io'
-    var iosDeviceInfo = await deviceInfo.iosInfo;
-    return iosDeviceInfo.identifierForVendor; // unique ID on iOS
-  } else if(Platform.isAndroid) {
-    var androidDeviceInfo = await deviceInfo.androidInfo;
-    return androidDeviceInfo.id; // unique ID on Android
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      // import 'dart:io'
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.id; // unique ID on Android
+    }
   }
-}
+
   _mapLogin(_login event, Emitter<AuthState> emit) async {
     emit(const AuthState.loadingLogin());
-    final response = await _loginUseCase(event.request.copyWith(serialNumber: await _getId()));
-    return await response
-        .fold((l) async => emit(AuthState.errorLogin(l.message)), (r1) async {
-      _appPreferences.saveToken(r1.token);
-// user=r1;
-      emit(AuthState.successLogin(
-        r1,
-      ));
-    });
+    final response = await _loginUseCase(
+        event.request.copyWith(serialNumber: await _getId()));
+    try {
+      await response.fold((l) async => emit(AuthState.errorLogin(l.message)),
+          (r1) async {
+        _appPreferences.saveToken(r1.token);
+        emit(AuthState.successLogin(
+          r1,
+        ));
+      });
+    } catch (e) {
+      emit(AuthState.errorLoginWithToken(e.toString()));
+    }
   }
 
   _mapLoginWithToken(_loginWithToken event, Emitter<AuthState> emit) async {
     emit(const AuthState.loadingLoginWithToken());
     final response = await _getProfile(NoParameters());
-    return await response
-        .fold((l) async => emit(AuthState.errorLoginWithToken(l.message)),
-            (r1) async {
-      user = r1;
-      emit(AuthState.successLoginWithToken(
-        r1,
-      ));
-    });
+    try {
+      await response
+          .fold((l) async => emit(AuthState.errorLoginWithToken(l.message)),
+              (r1) async {
+        user = r1;
+        emit(AuthState.successLoginWithToken(
+          r1,
+        ));
+      });
+    } catch (e) {
+      emit(AuthState.errorLoginWithToken(e.toString()));
+    }
   }
 }
