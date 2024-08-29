@@ -30,11 +30,11 @@ Widget btn(VoidCallback fun, String txt, bool invert) => AnimatedFadeWidget(
     child: Container(
       padding: REdgeInsets.symmetric(vertical: invert ? 8 : 9, horizontal: 15),
       decoration: BoxDecoration(
-          border: invert ? Border.all(color: AppColors.atendanceGrey1) : null,
-          color: invert ? AppColors.white : AppColors.atendanceOrange,
+          border: invert ? Border.all(color: AppColors.greyShadow) : null,
+          color: invert ? AppColors.white : AppColors.mainColor,
           borderRadius: BorderRadius.circular(10)),
       child: txt.toSubTitle(
-          color: !invert ? AppColors.white : AppColors.atendanceGreyDashboard,
+          color: !invert ? AppColors.white : AppColors.darkGrey,
           fontSize: 11,
           fontWeight: FontWeight.w700),
     ));

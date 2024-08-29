@@ -2,16 +2,17 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:pyramakerz_atendnace/core/asset_manger/asset_manger.dart';
+
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/bloc/bloc/auth_bloc.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/app_bar_widget.dart';
+import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/attendance_card.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_in_container.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/loading_indicater.dart';
+import 'package:pyramakerz_atendnace/features/shared_widget/custom_refresh_indicator.dart';
 
 @RoutePage()
 class DashboardPage extends StatefulWidget {
@@ -25,12 +26,13 @@ class _DashboardPageState extends State<DashboardPage> {
   User? user;
   @override
   void initState() {
-   user=widget.user;
-   if(user==null){
-    context.read<AuthBloc>().add(AuthEvent.loginWithToken());
-   }
+    user = widget.user;
+    if (user == null) {
+      context.read<AuthBloc>().add(AuthEvent.loginWithToken());
+    }
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
@@ -38,14 +40,15 @@ class _DashboardPageState extends State<DashboardPage> {
         // TODO: implement listener
       },
       builder: (context, state) {
-        return state.maybeMap(orElse: () {
-          return user == null ? Container() : myWid(widget.user!);
-        },
-        loadingLoginWithToken: (val)=>Scaffold(
-          body: LoadingIndicaterWidget(),
-        ),
-        successLoginWithToken: (val)=>myWid(val.user)
-        );
+        return state.maybeMap(
+            orElse: () {
+              //TO DO we need to make Empty page widget instead of empty Container
+              return user == null ? Container() : myWid(widget.user!);
+            },
+            loadingLoginWithToken: (val) => const Scaffold(
+                  body: LoadingIndicatorWidget(),
+                ),
+            successLoginWithToken: (val) => myWid(val.user));
       },
     );
   }
@@ -58,85 +61,43 @@ class _DashboardPageState extends State<DashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 20.toSizedBox,
-             AppBarWidget(firstName: user.name,),
-                20.toSizedBox,
-                ClockContainer(user: user,),
-                20.toSizedBox,
-                Row(
-                  children: [
-                    'Attendance List'.toSubTitle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 24,
-                        color: AppColors.atendanceBlack),
-                    Spacer(),
-                    'See all'.toSubTitle(
-                        color: AppColors.atendanceOrange,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500)
-                  ],
+                AppBarWidget(
+                  firstName: user.name,
                 ),
                 20.toSizedBox,
-                Container(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: AppColors.atendanceOrange,
-                        ),
-                      ),
-                      20.toSizedBox,
-                      Expanded(
-                        // Using Expanded here to allow checkCol widgets to take available space
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            'January 28th 2024'.toSubTitle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              color: AppColors.atendanceBlack,
-                            ),
-                            10.toSizedBox,
-                            'Wednesday'.toSubTitle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: AppColors.atendanceBlack,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: checkCol('Check in', '07:56:21'),
-                                ),
-                                Expanded(
-                                  child: checkCol('Checkout', '07:56:21'),
-                                ),
-                                Expanded(
-                                  child: checkCol('Work hours', '07:56:21'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                ClockContainer(
+                  user: user,
+                ),
+                20.toSizedBox,
+                _buildAttendanceTitle(),
+                20.toSizedBox,
+                Expanded(
+                  child: CustomRefreshIndicator(
+                    onRefresh: () async {},
+                    listView: ListView.separated(
+                      itemCount: 20,
+                      itemBuilder: (context, index) => AttendanceCard(),
+                      separatorBuilder: (_, index) => 20.toSizedBox,
+                    ),
                   ),
-                ),
+                )
               ],
             ),
           ),
         ),
       );
 
-  Widget checkCol(String header, String time) => Column(
-        children: [
-          header.toSubTitle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              color: AppColors.atendanceGrey1),
-          time.toSubTitle(
-              fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black)
-        ],
-      );
+  Widget _buildAttendanceTitle() {
+    return Row(
+      children: [
+        'Attendance List'.toSubTitle(
+            fontWeight: FontWeight.w700, fontSize: 24, color: AppColors.black),
+        const Spacer(),
+        'See all'.toSubTitle(
+            color: AppColors.mainColor,
+            fontSize: 14,
+            fontWeight: FontWeight.w500)
+      ],
+    );
+  }
 }

@@ -82,7 +82,7 @@ class _AddressWidgetState extends State<AddressWidget> {
         if (_isLoading)
           Container(
             height: 100.h,
-            child: LoadingIndicaterWidget(),
+            child: LoadingIndicatorWidget(),
           )
         else if (_errorMessage != null)
           AnimatedFadeWidget(
@@ -100,7 +100,7 @@ class _AddressWidgetState extends State<AddressWidget> {
                 height: 2,
                 width: 50.w,
                 decoration: BoxDecoration(
-                  color: AppColors.atendanceOrange,
+                  color: AppColors.mainColor,
                 ),
               ),
               3.toSizedBox,
@@ -109,7 +109,7 @@ class _AddressWidgetState extends State<AddressWidget> {
                 style: TextStyle(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.atendanceGreyDashboard),
+                    color: AppColors.darkGrey),
                 textAlign: TextAlign.center,
               ),
               Text(

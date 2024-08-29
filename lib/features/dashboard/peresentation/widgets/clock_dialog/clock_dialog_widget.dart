@@ -30,7 +30,7 @@ class ClockInDialog extends StatelessWidget {
               user: user,
             ),
             16.toSizedBox,
-            SiteSelector(),
+            if (user.isWorkFromHome == true) SiteSelector(),
             16.toSizedBox,
             ClockDateTimeWidget(),
             16.toSizedBox,

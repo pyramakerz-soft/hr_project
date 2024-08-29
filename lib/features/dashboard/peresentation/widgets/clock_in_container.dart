@@ -19,7 +19,7 @@ class ClockContainer extends StatelessWidget {
       padding: REdgeInsets.symmetric(vertical: 30, horizontal: 20),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: AppColors.atendanceOrangeFaded, width: 3)),
+          border: Border.all(color: AppColors.mainColorFaded, width: 3)),
       child: Column(
         children: [
           Row(
@@ -36,7 +36,7 @@ class ClockContainer extends StatelessWidget {
                     'Date'.toSubTitle(
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
-                      color: AppColors.atendanceGreyDark,
+                      color: AppColors.grey,
                     ),
                   ],
                 ),
@@ -45,15 +45,17 @@ class ClockContainer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    user.roleName.toSubTitle(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    user.roleName != null
+                        ? user.roleName!.toSubTitle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          )
+                        : const SizedBox(),
                     'Position'.toSubTitle(
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
-                      color: AppColors.atendanceGreyDark,
+                      color: AppColors.grey,
                     ),
                   ],
                 ),
@@ -64,15 +66,15 @@ class ClockContainer extends StatelessWidget {
           MainBtn(
             margin: 0,
             fun: () {
-                            showDialog(
-                              
+              showDialog(
                 context: context,
-                builder: (context) => ClockInDialog(user: user,),
+                builder: (context) => ClockInDialog(
+                  user: user,
+                ),
               );
-
             },
             txt: 'Clock In',
-            color: AppColors.atendanceOrange,
+            color: AppColors.mainColor,
           ),
         ],
       ),
