@@ -1,14 +1,14 @@
 class ClockRequest {
-  final double latitude;
-  final double longitude;
-  final String locationType;
-  final DateTime clockIn;
+  final double? latitude;
+  final double? longitude;
+  final String? locationType;
+  final DateTime? clockIn;
 
   ClockRequest({
-    required this.latitude,
-    required this.longitude,
-    required this.locationType,
-    required this.clockIn,
+    this.latitude,
+    this.longitude,
+    this.locationType,
+    this.clockIn,
   });
 
   // Convert Location object to a Map (useful for JSON serialization)
@@ -17,7 +17,7 @@ class ClockRequest {
       'latitude': latitude,
       'longitude': longitude,
       'location_type': locationType,
-      'clock_in': clockIn.toUtc().toIso8601String(),
+      'clock_in': clockIn?.toUtc().toIso8601String(),
     };
   }
 
@@ -29,5 +29,21 @@ class ClockRequest {
       locationType: map['location_type'],
       clockIn: DateTime.parse(map['clock_in']).toUtc(),
     );
+  }
+}
+
+enum LocationType {
+  site,
+  home,
+}
+
+extension Getters on LocationType {
+  String text() {
+    switch (this) {
+      case LocationType.site:
+        return 'site';
+      case LocationType.home:
+        return 'home';
+    }
   }
 }
