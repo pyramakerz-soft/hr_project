@@ -19,38 +19,38 @@ mixin _$AuthEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(LoginRequest request) login,
-    required TResult Function() loginWithToken,
+    required TResult Function() getHomeData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(LoginRequest request)? login,
-    TResult? Function()? loginWithToken,
+    TResult? Function()? getHomeData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(LoginRequest request)? login,
-    TResult Function()? loginWithToken,
+    TResult Function()? getHomeData,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_login value) login,
-    required TResult Function(_loginWithToken value) loginWithToken,
+    required TResult Function(_loginWithToken value) getHomeData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_login value)? login,
-    TResult? Function(_loginWithToken value)? loginWithToken,
+    TResult? Function(_loginWithToken value)? getHomeData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_login value)? login,
-    TResult Function(_loginWithToken value)? loginWithToken,
+    TResult Function(_loginWithToken value)? getHomeData,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -145,7 +145,7 @@ class _$loginImpl implements _login {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(LoginRequest request) login,
-    required TResult Function() loginWithToken,
+    required TResult Function() getHomeData,
   }) {
     return login(request);
   }
@@ -154,7 +154,7 @@ class _$loginImpl implements _login {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(LoginRequest request)? login,
-    TResult? Function()? loginWithToken,
+    TResult? Function()? getHomeData,
   }) {
     return login?.call(request);
   }
@@ -163,7 +163,7 @@ class _$loginImpl implements _login {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(LoginRequest request)? login,
-    TResult Function()? loginWithToken,
+    TResult Function()? getHomeData,
     required TResult orElse(),
   }) {
     if (login != null) {
@@ -176,7 +176,7 @@ class _$loginImpl implements _login {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_login value) login,
-    required TResult Function(_loginWithToken value) loginWithToken,
+    required TResult Function(_loginWithToken value) getHomeData,
   }) {
     return login(this);
   }
@@ -185,7 +185,7 @@ class _$loginImpl implements _login {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_login value)? login,
-    TResult? Function(_loginWithToken value)? loginWithToken,
+    TResult? Function(_loginWithToken value)? getHomeData,
   }) {
     return login?.call(this);
   }
@@ -194,7 +194,7 @@ class _$loginImpl implements _login {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_login value)? login,
-    TResult Function(_loginWithToken value)? loginWithToken,
+    TResult Function(_loginWithToken value)? getHomeData,
     required TResult orElse(),
   }) {
     if (login != null) {
@@ -242,7 +242,7 @@ class _$loginWithTokenImpl implements _loginWithToken {
 
   @override
   String toString() {
-    return 'AuthEvent.loginWithToken()';
+    return 'AuthEvent.getHomeData()';
   }
 
   @override
@@ -258,29 +258,29 @@ class _$loginWithTokenImpl implements _loginWithToken {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(LoginRequest request) login,
-    required TResult Function() loginWithToken,
+    required TResult Function() getHomeData,
   }) {
-    return loginWithToken();
+    return getHomeData();
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(LoginRequest request)? login,
-    TResult? Function()? loginWithToken,
+    TResult? Function()? getHomeData,
   }) {
-    return loginWithToken?.call();
+    return getHomeData?.call();
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(LoginRequest request)? login,
-    TResult Function()? loginWithToken,
+    TResult Function()? getHomeData,
     required TResult orElse(),
   }) {
-    if (loginWithToken != null) {
-      return loginWithToken();
+    if (getHomeData != null) {
+      return getHomeData();
     }
     return orElse();
   }
@@ -289,29 +289,29 @@ class _$loginWithTokenImpl implements _loginWithToken {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_login value) login,
-    required TResult Function(_loginWithToken value) loginWithToken,
+    required TResult Function(_loginWithToken value) getHomeData,
   }) {
-    return loginWithToken(this);
+    return getHomeData(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_login value)? login,
-    TResult? Function(_loginWithToken value)? loginWithToken,
+    TResult? Function(_loginWithToken value)? getHomeData,
   }) {
-    return loginWithToken?.call(this);
+    return getHomeData?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_login value)? login,
-    TResult Function(_loginWithToken value)? loginWithToken,
+    TResult Function(_loginWithToken value)? getHomeData,
     required TResult orElse(),
   }) {
-    if (loginWithToken != null) {
-      return loginWithToken(this);
+    if (getHomeData != null) {
+      return getHomeData(this);
     }
     return orElse();
   }
@@ -330,8 +330,8 @@ mixin _$AuthState {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -341,8 +341,8 @@ mixin _$AuthState {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -352,8 +352,8 @@ mixin _$AuthState {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -365,9 +365,8 @@ mixin _$AuthState {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -377,8 +376,8 @@ mixin _$AuthState {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -388,8 +387,8 @@ mixin _$AuthState {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -461,8 +460,8 @@ class _$InitialImpl implements _Initial {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) {
     return initial();
   }
@@ -475,8 +474,8 @@ class _$InitialImpl implements _Initial {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) {
     return initial?.call();
   }
@@ -489,8 +488,8 @@ class _$InitialImpl implements _Initial {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -508,9 +507,8 @@ class _$InitialImpl implements _Initial {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) {
     return initial(this);
   }
@@ -523,8 +521,8 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) {
     return initial?.call(this);
   }
@@ -537,8 +535,8 @@ class _$InitialImpl implements _Initial {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -598,8 +596,8 @@ class _$loadingLoginImpl implements _loadingLogin {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) {
     return loadingLogin();
   }
@@ -612,8 +610,8 @@ class _$loadingLoginImpl implements _loadingLogin {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) {
     return loadingLogin?.call();
   }
@@ -626,8 +624,8 @@ class _$loadingLoginImpl implements _loadingLogin {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (loadingLogin != null) {
@@ -645,9 +643,8 @@ class _$loadingLoginImpl implements _loadingLogin {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) {
     return loadingLogin(this);
   }
@@ -660,8 +657,8 @@ class _$loadingLoginImpl implements _loadingLogin {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) {
     return loadingLogin?.call(this);
   }
@@ -674,8 +671,8 @@ class _$loadingLoginImpl implements _loadingLogin {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (loadingLogin != null) {
@@ -763,8 +760,8 @@ class _$successLoginImpl implements _successLogin {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) {
     return successLogin(response);
   }
@@ -777,8 +774,8 @@ class _$successLoginImpl implements _successLogin {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) {
     return successLogin?.call(response);
   }
@@ -791,8 +788,8 @@ class _$successLoginImpl implements _successLogin {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (successLogin != null) {
@@ -810,9 +807,8 @@ class _$successLoginImpl implements _successLogin {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) {
     return successLogin(this);
   }
@@ -825,8 +821,8 @@ class _$successLoginImpl implements _successLogin {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) {
     return successLogin?.call(this);
   }
@@ -839,8 +835,8 @@ class _$successLoginImpl implements _successLogin {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (successLogin != null) {
@@ -936,8 +932,8 @@ class _$errorLoginImpl implements errorLogin {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) {
     return errorLogin(err);
   }
@@ -950,8 +946,8 @@ class _$errorLoginImpl implements errorLogin {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) {
     return errorLogin?.call(err);
   }
@@ -964,8 +960,8 @@ class _$errorLoginImpl implements errorLogin {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (errorLogin != null) {
@@ -983,9 +979,8 @@ class _$errorLoginImpl implements errorLogin {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) {
     return errorLogin(this);
   }
@@ -998,8 +993,8 @@ class _$errorLoginImpl implements errorLogin {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) {
     return errorLogin?.call(this);
   }
@@ -1012,8 +1007,8 @@ class _$errorLoginImpl implements errorLogin {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (errorLogin != null) {
@@ -1083,8 +1078,8 @@ class _$loadingLoginWithTokenImpl implements _loadingLoginWithToken {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) {
     return loadingLoginWithToken();
   }
@@ -1097,8 +1092,8 @@ class _$loadingLoginWithTokenImpl implements _loadingLoginWithToken {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) {
     return loadingLoginWithToken?.call();
   }
@@ -1111,8 +1106,8 @@ class _$loadingLoginWithTokenImpl implements _loadingLoginWithToken {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (loadingLoginWithToken != null) {
@@ -1130,9 +1125,8 @@ class _$loadingLoginWithTokenImpl implements _loadingLoginWithToken {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) {
     return loadingLoginWithToken(this);
   }
@@ -1145,8 +1139,8 @@ class _$loadingLoginWithTokenImpl implements _loadingLoginWithToken {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) {
     return loadingLoginWithToken?.call(this);
   }
@@ -1159,8 +1153,8 @@ class _$loadingLoginWithTokenImpl implements _loadingLoginWithToken {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) {
     if (loadingLoginWithToken != null) {
@@ -1218,7 +1212,7 @@ class _$successLoginWithTokenImpl implements _successLoginWithToken {
 
   @override
   String toString() {
-    return 'AuthState.successLoginWithToken(user: $user)';
+    return 'AuthState.getHomeDataSucceed(user: $user)';
   }
 
   @override
@@ -1249,10 +1243,10 @@ class _$successLoginWithTokenImpl implements _successLoginWithToken {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) {
-    return successLoginWithToken(user);
+    return getHomeDataSucceed(user);
   }
 
   @override
@@ -1263,10 +1257,10 @@ class _$successLoginWithTokenImpl implements _successLoginWithToken {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) {
-    return successLoginWithToken?.call(user);
+    return getHomeDataSucceed?.call(user);
   }
 
   @override
@@ -1277,12 +1271,12 @@ class _$successLoginWithTokenImpl implements _successLoginWithToken {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) {
-    if (successLoginWithToken != null) {
-      return successLoginWithToken(user);
+    if (getHomeDataSucceed != null) {
+      return getHomeDataSucceed(user);
     }
     return orElse();
   }
@@ -1296,11 +1290,10 @@ class _$successLoginWithTokenImpl implements _successLoginWithToken {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) {
-    return successLoginWithToken(this);
+    return getHomeDataSucceed(this);
   }
 
   @override
@@ -1311,10 +1304,10 @@ class _$successLoginWithTokenImpl implements _successLoginWithToken {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) {
-    return successLoginWithToken?.call(this);
+    return getHomeDataSucceed?.call(this);
   }
 
   @override
@@ -1325,12 +1318,12 @@ class _$successLoginWithTokenImpl implements _successLoginWithToken {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) {
-    if (successLoginWithToken != null) {
-      return successLoginWithToken(this);
+    if (getHomeDataSucceed != null) {
+      return getHomeDataSucceed(this);
     }
     return orElse();
   }
@@ -1392,7 +1385,7 @@ class _$errorLoginWithTokenImpl implements _errorLoginWithToken {
 
   @override
   String toString() {
-    return 'AuthState.errorLoginWithToken(err: $err)';
+    return 'AuthState.getHomeDataError(err: $err)';
   }
 
   @override
@@ -1423,10 +1416,10 @@ class _$errorLoginWithTokenImpl implements _errorLoginWithToken {
     required TResult Function(LoginResponse response) successLogin,
     required TResult Function(String err) errorLogin,
     required TResult Function() loadingLoginWithToken,
-    required TResult Function(User user) successLoginWithToken,
-    required TResult Function(String err) errorLoginWithToken,
+    required TResult Function(User user) getHomeDataSucceed,
+    required TResult Function(String err) getHomeDataError,
   }) {
-    return errorLoginWithToken(err);
+    return getHomeDataError(err);
   }
 
   @override
@@ -1437,10 +1430,10 @@ class _$errorLoginWithTokenImpl implements _errorLoginWithToken {
     TResult? Function(LoginResponse response)? successLogin,
     TResult? Function(String err)? errorLogin,
     TResult? Function()? loadingLoginWithToken,
-    TResult? Function(User user)? successLoginWithToken,
-    TResult? Function(String err)? errorLoginWithToken,
+    TResult? Function(User user)? getHomeDataSucceed,
+    TResult? Function(String err)? getHomeDataError,
   }) {
-    return errorLoginWithToken?.call(err);
+    return getHomeDataError?.call(err);
   }
 
   @override
@@ -1451,12 +1444,12 @@ class _$errorLoginWithTokenImpl implements _errorLoginWithToken {
     TResult Function(LoginResponse response)? successLogin,
     TResult Function(String err)? errorLogin,
     TResult Function()? loadingLoginWithToken,
-    TResult Function(User user)? successLoginWithToken,
-    TResult Function(String err)? errorLoginWithToken,
+    TResult Function(User user)? getHomeDataSucceed,
+    TResult Function(String err)? getHomeDataError,
     required TResult orElse(),
   }) {
-    if (errorLoginWithToken != null) {
-      return errorLoginWithToken(err);
+    if (getHomeDataError != null) {
+      return getHomeDataError(err);
     }
     return orElse();
   }
@@ -1470,11 +1463,10 @@ class _$errorLoginWithTokenImpl implements _errorLoginWithToken {
     required TResult Function(errorLogin value) errorLogin,
     required TResult Function(_loadingLoginWithToken value)
         loadingLoginWithToken,
-    required TResult Function(_successLoginWithToken value)
-        successLoginWithToken,
-    required TResult Function(_errorLoginWithToken value) errorLoginWithToken,
+    required TResult Function(_successLoginWithToken value) getHomeDataSucceed,
+    required TResult Function(_errorLoginWithToken value) getHomeDataError,
   }) {
-    return errorLoginWithToken(this);
+    return getHomeDataError(this);
   }
 
   @override
@@ -1485,10 +1477,10 @@ class _$errorLoginWithTokenImpl implements _errorLoginWithToken {
     TResult? Function(_successLogin value)? successLogin,
     TResult? Function(errorLogin value)? errorLogin,
     TResult? Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult? Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult? Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult? Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult? Function(_errorLoginWithToken value)? getHomeDataError,
   }) {
-    return errorLoginWithToken?.call(this);
+    return getHomeDataError?.call(this);
   }
 
   @override
@@ -1499,12 +1491,12 @@ class _$errorLoginWithTokenImpl implements _errorLoginWithToken {
     TResult Function(_successLogin value)? successLogin,
     TResult Function(errorLogin value)? errorLogin,
     TResult Function(_loadingLoginWithToken value)? loadingLoginWithToken,
-    TResult Function(_successLoginWithToken value)? successLoginWithToken,
-    TResult Function(_errorLoginWithToken value)? errorLoginWithToken,
+    TResult Function(_successLoginWithToken value)? getHomeDataSucceed,
+    TResult Function(_errorLoginWithToken value)? getHomeDataError,
     required TResult orElse(),
   }) {
-    if (errorLoginWithToken != null) {
-      return errorLoginWithToken(this);
+    if (getHomeDataError != null) {
+      return getHomeDataError(this);
     }
     return orElse();
   }
