@@ -12,6 +12,7 @@ import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/ap
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/attendance_card.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_in_container.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/loading_indicater.dart';
+import 'package:pyramakerz_atendnace/features/home/presentation/cubit/home_cubit.dart';
 import 'package:pyramakerz_atendnace/features/shared_widget/custom_refresh_indicator.dart';
 
 @RoutePage()
@@ -28,7 +29,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     user = widget.user;
     if (user == null) {
-      context.read<AuthBloc>().add(AuthEvent.loginWithToken());
+      context.read<AuthBloc>().add(AuthEvent.getHomeData());
     }
     super.initState();
   }
@@ -43,49 +44,64 @@ class _DashboardPageState extends State<DashboardPage> {
         return state.maybeMap(
             orElse: () {
               //TO DO we need to make Empty page widget instead of empty Container
-              return user == null ? Container() : myWid(widget.user!);
+              return user == null ? Container() : _HomeBody(user: widget.user!);
             },
             loadingLoginWithToken: (val) => const Scaffold(
                   body: LoadingIndicatorWidget(),
                 ),
-            successLoginWithToken: (val) => myWid(val.user));
+            // TO DO we need to make the home cubit is the one responsible for home data not the auth bloc
+            getHomeDataSucceed: (val) => _HomeBody(user: val.user));
       },
     );
   }
+}
 
-  Widget myWid(User user) => Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: REdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                20.toSizedBox,
-                AppBarWidget(
-                  firstName: user.name,
-                ),
-                20.toSizedBox,
-                ClockContainer(
-                  user: user,
-                ),
-                20.toSizedBox,
-                _buildAttendanceTitle(),
-                20.toSizedBox,
-                Expanded(
-                  child: CustomRefreshIndicator(
-                    onRefresh: () async {},
-                    listView: ListView.separated(
-                      itemCount: 20,
-                      itemBuilder: (context, index) => AttendanceCard(),
-                      separatorBuilder: (_, index) => 20.toSizedBox,
-                    ),
+class _HomeBody extends StatelessWidget {
+  final User user;
+
+  const _HomeBody({required this.user, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: BlocConsumer<HomeCubit, HomeState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return SafeArea(
+            child: Padding(
+              padding: REdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  20.toSizedBox,
+                  AppBarWidget(
+                    firstName: user.name,
                   ),
-                )
-              ],
+                  20.toSizedBox,
+                  ClockContainer(
+                    user: user,
+                  ),
+                  20.toSizedBox,
+                  _buildAttendanceTitle(),
+                  20.toSizedBox,
+                  Expanded(
+                    child: CustomRefreshIndicator(
+                      onRefresh: () async {},
+                      listView: ListView.separated(
+                        itemCount: 20,
+                        itemBuilder: (context, index) => AttendanceCard(),
+                        separatorBuilder: (_, index) => 20.toSizedBox,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ),
-      );
+          );
+        },
+      ),
+    );
+  }
 
   Widget _buildAttendanceTitle() {
     return Row(
