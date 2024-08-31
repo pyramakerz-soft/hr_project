@@ -10,7 +10,6 @@ import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart'
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/animated_fade_widget.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
-import 'package:pyramakerz_atendnace/features/auth/persentation/login/login_page.dart';
 
 class AppBarWidget extends StatelessWidget {
   const AppBarWidget({
