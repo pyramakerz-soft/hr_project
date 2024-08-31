@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class ClockRequest {
   final double? latitude;
   final double? longitude;
@@ -17,7 +19,9 @@ class ClockRequest {
       'latitude': latitude,
       'longitude': longitude,
       'location_type': locationType,
-      'clock_in': clockIn?.toUtc().toIso8601String(),
+      'clock_in': clockIn != null
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(clockIn!.toUtc())
+          : null,
     };
   }
 
