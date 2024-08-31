@@ -1,17 +1,17 @@
 class LoginRequest {
   final String email;
   final String password;
-  final String? serialNumber;
+  // final String? serialNumber;
   LoginRequest({
     required this.email,
     required this.password,
-     this.serialNumber,
+    //  this.serialNumber,
   });
 
   // Method to convert `LoginRequest` instance to a map.
   Map<String, dynamic> toMap() {
     return {
-      'serial_number':serialNumber,
+      // 'serial_number':serialNumber,
       'email': email,
       'password': password,
     };
@@ -25,7 +25,7 @@ class LoginRequest {
     return LoginRequest(
       email: email ?? this.email,
       password: password ?? this.password,
-      serialNumber: serialNumber ?? this.serialNumber,
+      // serialNumber: serialNumber ?? this.serialNumber,
     );
   }
 }
