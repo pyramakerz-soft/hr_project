@@ -23,7 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEvent>((event, emit) async {
       await event.map(
         login: (event) async => await _mapLogin(event, emit),
-        loginWithToken: (event) async => await _mapLoginWithToken(event, emit),
+        getHomeData: (event) async => await _mapLoginWithToken(event, emit),
       );
     });
   }
@@ -58,7 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ));
       });
     } catch (e) {
-      emit(AuthState.errorLoginWithToken(e.toString()));
+      emit(AuthState.getHomeDataError(e.toString()));
     }
   }
 
@@ -67,15 +67,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await _getProfile(NoParameters());
     try {
       await response
-          .fold((l) async => emit(AuthState.errorLoginWithToken(l.message)),
+          .fold((l) async => emit(AuthState.getHomeDataError(l.message)),
               (r1) async {
         user = r1;
-        emit(AuthState.successLoginWithToken(
+        emit(AuthState.getHomeDataSucceed(
           r1,
         ));
       });
     } catch (e) {
-      emit(AuthState.errorLoginWithToken(e.toString()));
+      emit(AuthState.getHomeDataError(e.toString()));
     }
   }
 }

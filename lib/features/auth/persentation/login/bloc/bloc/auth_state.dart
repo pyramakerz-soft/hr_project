@@ -11,6 +11,6 @@ class AuthState with _$AuthState {
 
 
    const factory AuthState.loadingLoginWithToken( ) = _loadingLoginWithToken;
-  const factory AuthState.successLoginWithToken(User user, ) = _successLoginWithToken;
-  const factory AuthState.errorLoginWithToken(String err,) = _errorLoginWithToken;
+  const factory AuthState.getHomeDataSucceed(User user, ) = _successLoginWithToken;
+  const factory AuthState.getHomeDataError(String err,) = _errorLoginWithToken;
 }
