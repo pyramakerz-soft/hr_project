@@ -34,7 +34,6 @@ class ApiHelper {
         // req.headers['Authorization'] = 'Bearer $token';
         if (authToken != null) {
           req.headers["Authorization"] = "Bearer $authToken";
-            
         }
         handler.next(req);
       },
@@ -132,6 +131,7 @@ class ApiHelper {
           response.statusCode == 204) {
         return Right(response);
       } else {
+        //TO DO why you don't return the left without any condition just remove the if
         if (response.statusCode == 401 && response.data['detail'] != null) {
           return Left(ServerException(
               errorMessageModel: ErrorMessageModel(
