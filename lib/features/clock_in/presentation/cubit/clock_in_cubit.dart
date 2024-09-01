@@ -21,11 +21,15 @@ class ClockInCubit extends Cubit<ClockInState> {
   Future<void> checkIn({required ClockRequest request}) async {
     try {
       final response = await _repository.checkIn(request: request);
-      emit(state.copyWith(
-          status: ClockInStateStatus.checkIn, workingData: response));
+      emit(
+        state.copyWith(
+            status: ClockInStateStatus.checkIn,
+            workingData: response,
+            message: 'Check In Successful'),
+      );
     } catch (e) {
       emit(state.copyWith(
-          status: ClockInStateStatus.error, error: e.toString()));
+          status: ClockInStateStatus.error, message: e.toString()));
     }
   }
 
@@ -51,7 +55,7 @@ class ClockInCubit extends Cubit<ClockInState> {
       _getFormattedAddress(position.latitude, position.longitude);
     } catch (e) {
       emit(state.copyWith(
-          status: ClockInStateStatus.error, error: e.toString()));
+          status: ClockInStateStatus.error, message: e.toString()));
     }
   }
 
@@ -69,7 +73,7 @@ class ClockInCubit extends Cubit<ClockInState> {
       emit(
         state.copyWith(
           status: ClockInStateStatus.error,
-          error: e.toString(),
+          message: e.toString(),
         ),
       );
     }

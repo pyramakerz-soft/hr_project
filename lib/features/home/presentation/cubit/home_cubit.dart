@@ -1,8 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
+import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/home/data/repository/home_repository.dart';
@@ -19,61 +21,53 @@ class HomeCubit extends Cubit<HomeState> {
         _locationService = locationService,
         super(const HomeState(status: HomeStateStatus.initial));
 
-  Future<void> init() async {
+  Future<void> init({required User user}) async {
     await _locationService.askForPermissionIfNeeded();
-  }
-
-  Future<void> checkIn({required ClockRequest request}) async {
-    emit(state.copyWith(status: HomeStateStatus.loading));
-    try {
-      final response = await _repository.checkIn(request: ClockRequest());
-      emit(state.copyWith(
-          status: HomeStateStatus.loaded, workingData: response));
-    } catch (e) {
-      emit(state.copyWith(status: HomeStateStatus.error, error: e.toString()));
-    }
-  }
-
-  Future<void> checkOut({required ClockRequest request}) async {
-    emit(state.copyWith(status: HomeStateStatus.loading));
-    try {
-      final response = await _repository.checkOut(request: ClockRequest());
-      emit(state.copyWith(
-          status: HomeStateStatus.loaded, workingData: response));
-    } catch (e) {
-      emit(state.copyWith(status: HomeStateStatus.error, error: e.toString()));
-    }
+    emit(
+      state.copyWith(
+        user: user,
+        checkInStatus: user.isClockedOut == true
+            ? CheckInStateStatus.checkedIn
+            : CheckInStateStatus.checkedOut,
+      ),
+    );
   }
 
   Future<void> getCurrentLocation() async {
     try {
       final position = await _locationService.getCurrentLocation();
-      if (position == null) return;
-      _getFormattedAddress(position.latitude, position.longitude);
+      emit(state.copyWith(currentLocation: position));
     } catch (e) {
-      emit(state.copyWith(
-          addressStatus: AddressStateStatus.noAddressFound,
-          error: e.toString()));
+      emit(state.copyWith(status: HomeStateStatus.error, error: e.toString()));
     }
   }
 
-  Future<void> _getFormattedAddress(double latitude, double longitude) async {
+  void changeCheckInStatus({required Clock? workingData}) async {
+    emit(state.copyWith(
+        workingData: workingData ?? state.workingData,
+        checkInStatus: workingData == null
+            ? CheckInStateStatus.checkedIn
+            : CheckInStateStatus.checkedOut));
+  }
+
+  Future<void> checkOut({required DateTime time}) async {
+    final oldUser = state.user;
+    emit(state.copyWith(status: HomeStateStatus.loading));
     try {
-      final formattedAddress = await _locationService.getFormattedAddress(
-          latitude: latitude, longitude: longitude);
-      emit(
-        state.copyWith(
-          addressStatus: AddressStateStatus.gotAddress,
-          formattedAddress: formattedAddress,
-        ),
-      );
+      await _repository.checkOut(
+          request: ClockRequest(
+        longitude: 29.9653698,
+        latitude: 31.2403946,
+        clockOut: time,
+      ));
+      emit(state.copyWith(
+          user: oldUser?.copyWith(isClockedOut: true),
+          checkInStatus: CheckInStateStatus.checkedOut));
     } catch (e) {
-      emit(
-        state.copyWith(
-          addressStatus: AddressStateStatus.noAddressFound,
-          error: e.toString(),
-        ),
-      );
+      emit(state.copyWith(
+        status: HomeStateStatus.error,
+        error: e.toString(),
+      ));
     }
   }
 }

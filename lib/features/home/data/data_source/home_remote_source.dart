@@ -7,7 +7,7 @@ import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models
 
 abstract class HomeRemoteSource {
   Future<Clock> checkIn({required ClockRequest request});
-  Future<Clock> checkOut({required ClockRequest request});
+  Future<void> checkOut({required ClockRequest request});
 }
 
 @injectable.Order(-3)
@@ -17,8 +17,9 @@ class HomeRemoteSourceImpl implements HomeRemoteSource {
   HomeRemoteSourceImpl({required ApiHelper apiHelper}) : _apiHelper = apiHelper;
   @override
   Future<Clock> checkIn({required ClockRequest request}) async {
+    final body = request.toMap();
     return _apiHelper
-        .post(path: ApiConstants.clockIn, body: request.toMap())
+        .post(path: ApiConstants.clockIn, body: body)
         .then((response) {
       return response.fold(
           (e) => throw Failure(
@@ -29,12 +30,17 @@ class HomeRemoteSourceImpl implements HomeRemoteSource {
   }
 
   @override
-  Future<Clock> checkOut({required ClockRequest request}) {
-    return _apiHelper
-        .post(path: ApiConstants.clockOut, body: request.toMap())
-        .then((response) {
-      return response.fold((l) => throw l.errorMessageModel.message ?? '',
-          (r) => Clock.fromMap(r.data));
-    });
+  Future<void> checkOut({required ClockRequest request}) async {
+    try {
+      // Add logging to debug the request details
+      print("Attempting to check out with request: ${request.toMap()}");
+
+      await _apiHelper.post(path: ApiConstants.clockOut, body: request.toMap());
+
+      print("Check out request successful");
+    } catch (e) {
+      print("Error in checkOut: $e");
+      throw Failure(message: e.toString());
+    }
   }
 }

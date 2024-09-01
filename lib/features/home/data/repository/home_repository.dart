@@ -5,7 +5,7 @@ import 'package:pyramakerz_atendnace/features/home/data/data_source/home_remote_
 
 abstract class HomeRepository {
   Future<Clock> checkIn({required ClockRequest request});
-  Future<Clock> checkOut({required ClockRequest request});
+  Future<void> checkOut({required ClockRequest request});
 }
 
 @injectable.Order(-2)
@@ -20,7 +20,7 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Clock> checkOut({required ClockRequest request}) async {
+  Future<void> checkOut({required ClockRequest request}) async {
     return _remoteSource.checkOut(request: request);
   }
 }

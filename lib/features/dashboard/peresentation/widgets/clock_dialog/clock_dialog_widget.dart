@@ -14,6 +14,7 @@ import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/my_snackbar.dart';
 import 'package:pyramakerz_atendnace/features/clock_in/presentation/cubit/clock_in_cubit.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
+import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_dialog/clock_date_time_widget.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_dialog/dialog_profile_widget.dart';
@@ -21,10 +22,14 @@ import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/lo
 
 class ClockInDialog extends StatelessWidget {
   final User user;
+  final void Function({required Clock? workingData}) onSuccess;
+  final void Function() onFailure;
 
   const ClockInDialog({
     super.key,
     required this.user,
+    required this.onSuccess,
+    required this.onFailure,
   });
   @override
   Widget build(BuildContext context) {
@@ -37,8 +42,13 @@ class ClockInDialog extends StatelessWidget {
           create: (context) => getIt<ClockInCubit>()..getCurrentLocation(),
           child: BlocConsumer<ClockInCubit, ClockInState>(
             listener: (context, state) {
-              if (state.isNoAddressFound) {
-                MySnackbar.showError(context, state.error!);
+              if (state.isError) {
+                MySnackbar.showError(context, state.message!);
+                Navigator.of(context).pop();
+              }
+              if (state.isCheckIn) {
+                MySnackbar.showSuccess(context, state.message!);
+                onSuccess(workingData: state.workingData);
                 Navigator.of(context).pop();
               }
             },
@@ -85,13 +95,13 @@ class ClockInDialog extends StatelessWidget {
                   _buildFormattedAddress(
                       address: address ?? 'No Address Found'),
                   16.toSizedBox,
-                  _DialogBtns(
-                    onPostiveAction: () async {
+                  _DialogButtons(
+                    onPositiveAction: () async {
                       await clockInCubit.checkIn(
                         request: ClockRequest(
-                          longitude: state.currentLocation?.longitude,
-                          latitude: state.currentLocation?.latitude,
-                          locationType: 'site',
+                          longitude: 29.9653698,
+                          latitude: 31.2403946,
+                          isFromSite: true,
                           clockIn: DateTime.now(),
                         ),
                       );
@@ -114,7 +124,7 @@ Widget _buildFormattedAddress({required String address}) => Column(
         Container(
           height: 2,
           width: 50.w,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.mainColor,
           ),
         ),
@@ -135,19 +145,20 @@ Widget _buildFormattedAddress({required String address}) => Column(
       ],
     );
 
-class _DialogBtns extends StatefulWidget {
-  final FutureOr<void> Function() onPostiveAction;
+class _DialogButtons extends StatefulWidget {
+  final FutureOr<void> Function() onPositiveAction;
   final VoidCallback onNegativeAction;
-  const _DialogBtns(
-      {super.key,
-      required this.onPostiveAction,
-      required this.onNegativeAction});
+  const _DialogButtons({
+    super.key,
+    required this.onPositiveAction,
+    required this.onNegativeAction,
+  });
 
   @override
-  State<_DialogBtns> createState() => _DialogBtnsState();
+  State<_DialogButtons> createState() => _DialogButtonsState();
 }
 
-class _DialogBtnsState extends State<_DialogBtns> {
+class _DialogButtonsState extends State<_DialogButtons> {
   bool _isLoading = false;
   void _setButtonBusy() {
     setState(() {
@@ -174,7 +185,7 @@ class _DialogBtnsState extends State<_DialogBtns> {
         _isLoading
             ? Transform.scale(scale: 0.67, child: LoadingIndicatorWidget())
             : btn(() {
-                final futureOr = widget.onPostiveAction!();
+                final futureOr = widget.onPositiveAction!();
                 if (futureOr is Future) {
                   _setButtonBusy();
                   futureOr.whenComplete(() {

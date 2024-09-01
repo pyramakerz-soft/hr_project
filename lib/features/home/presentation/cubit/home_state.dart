@@ -8,10 +8,9 @@ enum HomeStateStatus {
   error,
 }
 
-enum AddressStateStatus {
-  gettingAddress,
-  gotAddress,
-  noAddressFound,
+enum CheckInStateStatus {
+  checkedIn,
+  checkedOut,
 }
 
 extension HomeStateX on HomeState {
@@ -21,43 +20,44 @@ extension HomeStateX on HomeState {
   bool get isError => status == HomeStateStatus.error;
 }
 
-extension AddressStateX on HomeState {
-  bool get isGettingAddress =>
-      addressStatus == AddressStateStatus.gettingAddress;
-  bool get isGotAddress => addressStatus == AddressStateStatus.gotAddress;
-  bool get isNoAddressFound =>
-      addressStatus == AddressStateStatus.noAddressFound;
+extension CheckInStateStatusX on HomeState {
+  bool get isCheckedIn => checkInStatus == CheckInStateStatus.checkedIn;
+  bool get isCheckedOut => checkInStatus == CheckInStateStatus.checkedOut;
 }
 
 class HomeState {
   final HomeStateStatus status;
-  final AddressStateStatus? addressStatus;
+  final CheckInStateStatus? checkInStatus;
   final String? formattedAddress;
   final Position? currentLocation;
   final Clock? workingData;
   final String? error;
+  final User? user;
   const HomeState({
     this.status = HomeStateStatus.initial,
-    this.addressStatus,
+    this.checkInStatus,
     this.formattedAddress,
     this.workingData,
     this.currentLocation,
+    this.user,
     this.error,
   });
 
   HomeState copyWith({
     HomeStateStatus? status,
-    AddressStateStatus? addressStatus,
+    CheckInStateStatus? checkInStatus,
     Clock? workingData,
     String? formattedAddress,
     Position? currentLocation,
+    User? user,
     String? error,
   }) {
     return HomeState(
       status: status ?? this.status,
       workingData: workingData ?? this.workingData,
-      addressStatus: addressStatus ?? this.addressStatus,
+      checkInStatus: checkInStatus ?? this.checkInStatus,
       currentLocation: currentLocation ?? this.currentLocation,
+      user: user ?? this.user,
       formattedAddress: formattedAddress ?? this.formattedAddress,
       error: error ?? this.error,
     );
@@ -69,7 +69,8 @@ class HomeState {
 
     return other.status == status &&
         other.workingData == workingData &&
-        other.addressStatus == addressStatus &&
+        other.user == user &&
+        other.checkInStatus == checkInStatus &&
         other.formattedAddress == formattedAddress &&
         other.currentLocation == currentLocation &&
         other.error == error;
@@ -79,8 +80,9 @@ class HomeState {
   int get hashCode =>
       status.hashCode ^
       workingData.hashCode ^
-      addressStatus.hashCode ^
+      checkInStatus.hashCode ^
       formattedAddress.hashCode ^
+      user.hashCode ^
       error.hashCode ^
       currentLocation.hashCode;
 }

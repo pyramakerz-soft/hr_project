@@ -12,7 +12,7 @@ extension AddressStateX on ClockInState {
   bool get isInitial => status == ClockInStateStatus.initial;
   bool get isGettingAddress => status == ClockInStateStatus.gettingAddress;
   bool get isGotAddress => status == ClockInStateStatus.gotAddress;
-  bool get isNoAddressFound => status == ClockInStateStatus.error;
+  bool get isError => status == ClockInStateStatus.error;
   bool get isCheckIn => status == ClockInStateStatus.checkIn;
 }
 
@@ -21,13 +21,13 @@ class ClockInState {
   final String? formattedAddress;
   final Position? currentLocation;
   final Clock? workingData;
-  final String? error;
+  final String? message;
   const ClockInState({
     this.status = ClockInStateStatus.gettingAddress,
     this.formattedAddress,
     this.workingData,
     this.currentLocation,
-    this.error,
+    this.message,
   });
 
   ClockInState copyWith({
@@ -35,14 +35,14 @@ class ClockInState {
     Clock? workingData,
     String? formattedAddress,
     Position? currentLocation,
-    String? error,
+    String? message,
   }) {
     return ClockInState(
       workingData: workingData ?? this.workingData,
       status: status ?? this.status,
       currentLocation: currentLocation ?? this.currentLocation,
       formattedAddress: formattedAddress ?? this.formattedAddress,
-      error: error ?? this.error,
+      message: message ?? this.message,
     );
   }
 
@@ -54,7 +54,7 @@ class ClockInState {
         other.status == status &&
         other.formattedAddress == formattedAddress &&
         other.currentLocation == currentLocation &&
-        other.error == error;
+        other.message == message;
   }
 
   @override
@@ -62,6 +62,6 @@ class ClockInState {
       workingData.hashCode ^
       status.hashCode ^
       formattedAddress.hashCode ^
-      error.hashCode ^
+      message.hashCode ^
       currentLocation.hashCode;
 }

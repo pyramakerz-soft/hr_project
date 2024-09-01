@@ -16,6 +16,7 @@ class AppColors {
   static final Color lightGrey = HexColor.fromHex('#F9F9FA');
   static final Color grey = HexColor.fromHex('#A9A9A9');
   static final Color darkGrey = HexColor.fromHex('#6B7280');
+  static const Color negativeRed = Color(0xFFD26053);
 
   static final Color red = HexColor.fromHex('#D04343');
   static final Color backgroundStartColor = HexColor.fromHex('#21427e');

@@ -2,12 +2,16 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
 
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/bloc/bloc/auth_bloc.dart';
+import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/my_snackbar.dart';
+import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/app_bar_widget.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/attendance_card.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_in_container.dart';
@@ -63,44 +67,75 @@ class _HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocConsumer<HomeCubit, HomeState>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          return SafeArea(
-            child: Padding(
-              padding: REdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  20.toSizedBox,
-                  AppBarWidget(
-                    firstName: user.name,
-                  ),
-                  20.toSizedBox,
-                  ClockContainer(
-                    user: user,
-                  ),
-                  20.toSizedBox,
-                  _buildAttendanceTitle(),
-                  20.toSizedBox,
-                  Expanded(
-                    child: CustomRefreshIndicator(
-                      onRefresh: () async {},
-                      listView: ListView.separated(
-                        itemCount: 20,
-                        itemBuilder: (context, index) => AttendanceCard(),
-                        separatorBuilder: (_, index) => 20.toSizedBox,
-                      ),
+    return BlocProvider(
+      create: (context) => getIt<HomeCubit>()
+        ..init(user: user)
+        ..getCurrentLocation(),
+      child: Scaffold(
+        body: BlocConsumer<HomeCubit, HomeState>(
+          listener: (context, state) {
+            if (state.isError) {
+              MySnackbar.showError(context, state.error!);
+            }
+          },
+          builder: (context, state) {
+            final homeCubit = context.read<HomeCubit>();
+            return SafeArea(
+              child: Padding(
+                padding: REdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    20.toSizedBox,
+                    AppBarWidget(
+                      firstName: user.name,
                     ),
-                  )
-                ],
+                    20.toSizedBox,
+                    if (state.checkInStatus != null)
+                      ClockContainer(
+                        user: user,
+                        onSuccess: homeCubit.changeCheckInStatus,
+                        isCheckedIn: state.isCheckedIn,
+                        onFailure: () {},
+                        onClockOut: () async {
+                          await homeCubit.checkOut(time: DateTime.now());
+                        },
+                        clockInTime:
+                            _parseTimeStringToDateTime(user.clockIn ?? ''),
+                      )
+                    else
+                      const LoadingIndicatorWidget(),
+                    20.toSizedBox,
+                    _buildAttendanceTitle(),
+                    20.toSizedBox,
+                    Expanded(
+                      child: CustomRefreshIndicator(
+                        onRefresh: () async {},
+                        listView: ListView.separated(
+                          itemCount: 20,
+                          itemBuilder: (context, index) => AttendanceCard(),
+                          separatorBuilder: (_, index) => 20.toSizedBox,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
+  }
+
+  DateTime _parseTimeStringToDateTime(String timeString) {
+    DateFormat timeFormat = DateFormat("HH:mm:ss");
+    try {
+      DateTime dateTime = timeFormat.parse(timeString);
+      return dateTime;
+    } catch (e) {
+      return DateTime.now();
+    }
   }
 
   Widget _buildAttendanceTitle() {
