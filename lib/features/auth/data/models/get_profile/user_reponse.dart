@@ -1,37 +1,39 @@
-
-
 class User {
-  final int id;
-  final String name;
-  final String nationalId;
-  final String image;
-  final String jobTitle;
-  final String roleName;
-  final bool isClockedOut;
-  final String clockIn;
+  final int? id;
+  final String? name;
+  final String? nationalId;
+  final String? image;
+  final String? jobTitle;
+  final String? roleName;
+  final bool? isClockedOut;
+  final String? clockIn;
+  final bool? isWorkFromHome;
 
   User({
-    required this.id,
-    required this.name,
-    required this.nationalId,
-    required this.image,
-    required this.jobTitle,
-    required this.roleName,
-    required this.isClockedOut,
-    required this.clockIn,
+    this.id,
+    this.name,
+    this.nationalId,
+    this.image,
+    this.jobTitle,
+    this.roleName,
+    this.isClockedOut,
+    this.clockIn,
+    this.isWorkFromHome,
   });
 
   // Factory method to create a User from JSON
+  // Factory method to create a User from JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      nationalId: json['national_id'] as String,
-      image: json['image'] as String,
-      jobTitle: json['job_title'] as String,
-      roleName: json['role_name'] as String,
-      isClockedOut: json['is_clocked_out'] as bool,
-      clockIn: json['clockIn'] as String,
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      nationalId: json['national_id'] as String?,
+      image: json['image'] as String?,
+      jobTitle: json['job_title'] as String?,
+      roleName: json['role_name'] as String?,
+      isClockedOut: json['is_clocked_out'] == true ? true : false,
+      clockIn: json['clockIn'] as String?,
+      isWorkFromHome: json['work_home'] == true ? true : false,
     );
   }
 
@@ -46,6 +48,64 @@ class User {
       'role_name': roleName,
       'is_clocked_out': isClockedOut,
       'clockIn': clockIn,
+      'work_home': isWorkFromHome
     };
+  }
+
+  User copyWith({
+    int? id,
+    String? name,
+    String? nationalId,
+    String? image,
+    String? jobTitle,
+    String? roleName,
+    bool? isClockedOut,
+    String? clockIn,
+    bool? isWorkFromHome,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      nationalId: nationalId ?? this.nationalId,
+      image: image ?? this.image,
+      jobTitle: jobTitle ?? this.jobTitle,
+      roleName: roleName ?? this.roleName,
+      isClockedOut: isClockedOut ?? this.isClockedOut,
+      clockIn: clockIn ?? this.clockIn,
+      isWorkFromHome: isWorkFromHome ?? this.isWorkFromHome,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'User(id: $id, name: $name, nationalId: $nationalId, image: $image, jobTitle: $jobTitle, roleName: $roleName, isClockedOut: $isClockedOut, clockIn: $clockIn, isWorkFromHome: $isWorkFromHome)';
+  }
+
+  @override
+  bool operator ==(covariant User other) {
+    if (identical(this, other)) return true;
+
+    return other.id == id &&
+        other.name == name &&
+        other.nationalId == nationalId &&
+        other.image == image &&
+        other.jobTitle == jobTitle &&
+        other.roleName == roleName &&
+        other.isClockedOut == isClockedOut &&
+        other.clockIn == clockIn &&
+        other.isWorkFromHome == isWorkFromHome;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        nationalId.hashCode ^
+        image.hashCode ^
+        jobTitle.hashCode ^
+        roleName.hashCode ^
+        isClockedOut.hashCode ^
+        clockIn.hashCode ^
+        isWorkFromHome.hashCode;
   }
 }

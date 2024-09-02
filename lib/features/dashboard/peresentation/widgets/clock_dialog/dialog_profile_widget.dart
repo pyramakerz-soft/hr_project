@@ -27,15 +27,15 @@ class ProfileSection extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(user.name,
+              Text(user.name ?? '',
                   style:
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
               5.toSizedBox,
-              Text(user.roleName,
+              Text(user.roleName ?? '',
                   style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 14.sp,
-                      color: AppColors.atendanceGreyDashboard)),
+                      color: AppColors.darkGrey)),
             ],
           ),
         ],

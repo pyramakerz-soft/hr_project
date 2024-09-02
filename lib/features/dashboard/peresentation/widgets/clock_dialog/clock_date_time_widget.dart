@@ -24,14 +24,14 @@ class ClockDateTimeWidget extends StatelessWidget {
               height: 2,
               width: 30.w,
               decoration: BoxDecoration(
-                color: AppColors.atendanceOrange,
+                color: AppColors.mainColor,
               ),
             ),
             3.toSizedBox,
             Text('Date',
                 style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    color: AppColors.atendanceGreyDashboard,
+                    color: AppColors.darkGrey,
                     fontSize: 12.sp)),
             Text(
               formattedDate,
@@ -46,14 +46,14 @@ class ClockDateTimeWidget extends StatelessWidget {
               height: 2,
               width: 30.w,
               decoration: BoxDecoration(
-                color: AppColors.atendanceOrange,
+                color: AppColors.mainColor,
               ),
             ),
             3.toSizedBox,
             Text('Time',
                 style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    color: AppColors.atendanceGreyDashboard,
+                    color: AppColors.darkGrey,
                     fontSize: 12.sp)),
             Text(
               formattedTime,

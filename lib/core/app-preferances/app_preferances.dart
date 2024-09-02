@@ -11,10 +11,9 @@ const String PASSWORD = 'PASSWORD';
 const String TOKEN = 'TOKEN';
 const String STEPS = 'STEPS';
 
-const String FIREBASENOTIFICATIONTOKEN = 'FIREBASENOTIFICATIONTOKEN';
-const String USERLOGGEDIN = 'USERLOGGEDIN';
-const String INGREDIENTS_SEARCH_IDS =
-    'INGREDIENTS_SEARCH_IDS'; // New constant for ingredients search ids
+const String FIREBASE_NOTIFICATION_TOKEN = 'FIREBASENOTIFICATIONTOKEN';
+const String USER_LOGGED_IN = 'USERLOGGEDIN';
+const String INGREDIENTS_SEARCH_IDS = 'INGREDIENTS_SEARCH_IDS';
 
 @Order(-4)
 @Injectable()
@@ -39,7 +38,7 @@ class AppPreferences {
     );
   }
 
-    Future<void> clearAllIngredients() async {
+  Future<void> clearAllIngredients() async {
     await sharedPreferences.remove(INGREDIENTS_SEARCH_IDS);
   }
 
@@ -81,10 +80,10 @@ class AppPreferences {
   String? getToken() => sharedPreferences.getString(TOKEN);
 
   Future<void> saveFirbaseNotificationToken(String token) async =>
-      await sharedPreferences.setString(FIREBASENOTIFICATIONTOKEN, token);
+      await sharedPreferences.setString(FIREBASE_NOTIFICATION_TOKEN, token);
 
   String? getFirebaseNotificationPushToken() =>
-      sharedPreferences.getString(FIREBASENOTIFICATIONTOKEN);
+      sharedPreferences.getString(FIREBASE_NOTIFICATION_TOKEN);
 
   Future<void> saveUserEmail(String email) async {
     sharedPreferences.setString(EMAIL, email);
@@ -111,11 +110,11 @@ class AppPreferences {
   }
 
   Future<void> setIsUserLoggedIn(bool logged) async {
-    await sharedPreferences.setBool(USERLOGGEDIN, logged);
+    await sharedPreferences.setBool(USER_LOGGED_IN, logged);
   }
 
   bool isUserLoggedIn() {
-    return sharedPreferences.getBool(USERLOGGEDIN) ?? false;
+    return sharedPreferences.getBool(USER_LOGGED_IN) ?? false;
   }
 
   // Future<void> setSaveZone(SafeZoneModel safeZone) async {

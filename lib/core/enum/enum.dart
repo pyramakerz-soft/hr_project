@@ -1,45 +1,44 @@
-// ignore_for_file: constant_identifier_names
-
 enum RequestStates {
   initial,
   loading,
-  acountExists,
+  accountExists,
   error,
   loaded,
-
-  anotherIntial,
+  anotherInitial,
   rebuildState,
 }
 
 enum ChatGptStates {
   initial,
   sendMessageLoading,
-
-  reciveMessage,
+  receiveMessage,
   error,
 }
 
-enum EditAcountEnumStates {
+enum EditAccountEnumStates {
   initial,
   loading,
-  acountExists,
+  accountExists,
   error,
   loaded,
-  ImageSizeErrorLoved,
-  ImageSizeErrorUser,
-
-  anotherIntial,
+  imageSizeErrorLoved,
+  imageSizeErrorUser,
+  anotherInitial,
   rebuildState,
 }
 
-enum DialogEnum { medication, task, Apointment }
+enum DialogEnum {
+  medication,
+  task,
+  appointment,
+}
 
 enum OAuthStateEnums {
   initial,
   loading,
   error,
-  acountExists,
-  noAcountExistsGoogle,
+  accountExists,
+  noAccountExistsGoogle,
 }
 
 enum DashboardGetProfileStates {
@@ -47,8 +46,7 @@ enum DashboardGetProfileStates {
   loading,
   loaded,
   error,
-  userdeleteAcount,
-
-  anotherIntial,
+  userDeleteAccount,
+  anotherInitial,
   rebuildState,
 }

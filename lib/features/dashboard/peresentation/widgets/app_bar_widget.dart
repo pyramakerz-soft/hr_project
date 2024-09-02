@@ -10,41 +10,43 @@ import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart'
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/animated_fade_widget.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
-import 'package:pyramakerz_atendnace/features/auth/persentation/login/login_page.dart';
 
 class AppBarWidget extends StatelessWidget {
-  const AppBarWidget({super.key, this.firstName,});
-final String? firstName;
+  const AppBarWidget({
+    super.key,
+    this.firstName,
+  });
+  final String? firstName;
 
   @override
   Widget build(BuildContext context) {
-    return    AnimatedFadeWidget(
-      onTap: (){
-        final apppref=getIt<AppPreferences>();
+    return AnimatedFadeWidget(
+      onTap: () {
+        final apppref = getIt<AppPreferences>();
         apppref.removeToken();
         context.router.replaceAll([LoginRoute()]);
       },
       child: Row(
-                    children: [
-                      SvgPicture.asset(AssetManger.menu),
-                      10.toSizedBoxHorizontal,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          'Hi, $firstName'.toSubTitle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
-                          ),
-                          'Good Morning'.toSubTitle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.atendanceGreyDashboard,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+        children: [
+          SvgPicture.asset(AssetManger.menu),
+          10.toSizedBoxHorizontal,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              'Hi, $firstName'.toSubTitle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+              ),
+              'Good Morning'.toSubTitle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.darkGrey,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

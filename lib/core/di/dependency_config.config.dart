@@ -15,6 +15,8 @@ import 'package:pyramakerz_atendnace/core/app-preferances/app_preferances.dart'
 import 'package:pyramakerz_atendnace/core/di/register_module.dart' as _i778;
 import 'package:pyramakerz_atendnace/core/dio/api_helper.dart' as _i640;
 import 'package:pyramakerz_atendnace/core/network/network_info.dart' as _i615;
+import 'package:pyramakerz_atendnace/core/services/location_service.dart'
+    as _i984;
 import 'package:pyramakerz_atendnace/features/auth/data/remote_data_source/remote_data_source.dart'
     as _i441;
 import 'package:pyramakerz_atendnace/features/auth/data/repo/repo.dart'
@@ -27,6 +29,8 @@ import 'package:pyramakerz_atendnace/features/auth/domain/usecases/login_usecase
     as _i18;
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/bloc/bloc/auth_bloc.dart'
     as _i13;
+import 'package:pyramakerz_atendnace/features/clock_in/presentation/cubit/clock_in_cubit.dart'
+    as _i1067;
 import 'package:pyramakerz_atendnace/features/dashboard/data/remote_data_source/remote_data_source.dart'
     as _i1059;
 import 'package:pyramakerz_atendnace/features/dashboard/data/repo/repo.dart'
@@ -37,6 +41,12 @@ import 'package:pyramakerz_atendnace/features/dashboard/domain/usecases/clockin_
     as _i350;
 import 'package:pyramakerz_atendnace/features/dashboard/domain/usecases/clockout_usecase.dart'
     as _i938;
+import 'package:pyramakerz_atendnace/features/home/data/data_source/home_remote_source.dart'
+    as _i378;
+import 'package:pyramakerz_atendnace/features/home/data/repository/home_repository.dart'
+    as _i233;
+import 'package:pyramakerz_atendnace/features/home/presentation/cubit/home_cubit.dart'
+    as _i883;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -61,12 +71,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i1059.BaseDashboardRemoteDataSource>(
         () => _i1059.DashboardRemoteDataSource());
     gh.singleton<_i615.NetworkInfo>(() => _i615.NetworkInfoImpl());
+    gh.singleton<_i378.HomeRemoteSource>(
+        () => _i378.HomeRemoteSourceImpl(apiHelper: gh<_i640.ApiHelper>()));
     gh.singleton<_i441.BaseAuthRemoteDataSource>(
         () => _i441.AuthRemoteDataSource(apiHelper: gh<_i640.ApiHelper>()));
+    gh.singleton<_i984.LocationService>(() => _i984.LocationServiceImpl());
     gh.singleton<_i171.BaseDashboardReposetry>(() => _i160.DashboardRepository(
           gh<_i1059.BaseDashboardRemoteDataSource>(),
           gh<_i615.NetworkInfo>(),
         ));
+    gh.singleton<_i233.HomeRepository>(() =>
+        _i233.HomeRepositoryImpl(remoteSource: gh<_i378.HomeRemoteSource>()));
     gh.singleton<_i283.BaseAuthReposetry>(() => _i320.AuthRepository(
           gh<_i441.BaseAuthRemoteDataSource>(),
           gh<_i615.NetworkInfo>(),
@@ -75,10 +90,18 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i350.ClockinUsecase(gh<_i171.BaseDashboardReposetry>()));
     gh.singleton<_i938.ClockOutUsecase>(
         () => _i938.ClockOutUsecase(gh<_i171.BaseDashboardReposetry>()));
-    gh.singleton<_i18.LoginUseCase>(
-        () => _i18.LoginUseCase(gh<_i283.BaseAuthReposetry>()));
     gh.singleton<_i615.GetProfileUsecase>(
         () => _i615.GetProfileUsecase(gh<_i283.BaseAuthReposetry>()));
+    gh.singleton<_i18.LoginUseCase>(
+        () => _i18.LoginUseCase(gh<_i283.BaseAuthReposetry>()));
+    gh.factory<_i1067.ClockInCubit>(() => _i1067.ClockInCubit(
+          repository: gh<_i233.HomeRepository>(),
+          locationService: gh<_i984.LocationService>(),
+        ));
+    gh.factory<_i883.HomeCubit>(() => _i883.HomeCubit(
+          repository: gh<_i233.HomeRepository>(),
+          locationService: gh<_i984.LocationService>(),
+        ));
     gh.factory<_i13.AuthBloc>(() => _i13.AuthBloc(
           gh<_i615.GetProfileUsecase>(),
           gh<_i963.AppPreferences>(),
