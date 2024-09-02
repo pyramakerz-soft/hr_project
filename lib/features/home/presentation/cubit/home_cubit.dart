@@ -56,8 +56,8 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       await _repository.checkOut(
           request: ClockRequest(
-        longitude: 29.9653698,
-        latitude: 31.2403946,
+        longitude: state.currentLocation?.longitude ?? 0.0,
+        latitude: state.currentLocation?.latitude ?? 0.0,
         clockOut: time,
       ));
       emit(state.copyWith(

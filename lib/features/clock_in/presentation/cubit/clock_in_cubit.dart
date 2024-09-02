@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pyramakerz_atendnace/core/error/failure.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
@@ -18,18 +19,28 @@ class ClockInCubit extends Cubit<ClockInState> {
         _locationService = locationService,
         super(const ClockInState(status: ClockInStateStatus.initial));
 
-  Future<void> checkIn({required ClockRequest request}) async {
+  Future<void> checkIn({required bool isFromSite}) async {
     try {
-      final response = await _repository.checkIn(request: request);
+      final response = await _repository.checkIn(
+        request: ClockRequest(
+          longitude: state.currentLocation?.longitude ?? 0.0,
+          latitude: state.currentLocation?.latitude ?? 0.0,
+          isFromSite: isFromSite,
+          clockIn: DateTime.now(),
+        ),
+      );
       emit(
         state.copyWith(
             status: ClockInStateStatus.checkIn,
             workingData: response,
             message: 'Check In Successful'),
       );
+    } on Failure catch (e) {
+      emit(
+          state.copyWith(status: ClockInStateStatus.error, message: e.message));
     } catch (e) {
       emit(state.copyWith(
-          status: ClockInStateStatus.error, message: e.toString()));
+          status: ClockInStateStatus.error, message: 'Error Occurred'));
     }
   }
 

@@ -98,12 +98,7 @@ class ClockInDialog extends StatelessWidget {
                   _DialogButtons(
                     onPositiveAction: () async {
                       await clockInCubit.checkIn(
-                        request: ClockRequest(
-                          longitude: 29.9653698,
-                          latitude: 31.2403946,
-                          isFromSite: true,
-                          clockIn: DateTime.now(),
-                        ),
+                        isFromSite: true,
                       );
                     },
                     onNegativeAction: () {},
