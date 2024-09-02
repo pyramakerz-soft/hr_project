@@ -85,11 +85,22 @@ class _ClockContainerState extends State<ClockContainer> {
         10.toSizedBox,
         _buildClockOutButton(context),
         10.toSizedBox,
-        ClockedInTimer(
-          clockInTime: widget.clockInTime ?? DateTime.now(),
-        )
+        // ClockedInTimer(
+        //   clockInTime: widget.clockInTime ?? DateTime.now(),
+        //   totalHours: _parseTimeStringToDateTime(widget.user.totalHours ?? ''),
+        // )
       ],
     );
+  }
+
+  DateTime? _parseTimeStringToDateTime(String timeString) {
+    DateFormat timeFormat = DateFormat("HH:mm:ss");
+    try {
+      DateTime dateTime = timeFormat.parse(timeString);
+      return dateTime;
+    } catch (e) {
+      return null;
+    }
   }
 
   Widget _buildClockInTime() {
@@ -211,10 +222,15 @@ class _ClockContainerState extends State<ClockContainer> {
 }
 
 class ClockedInTimer extends StatefulWidget {
-  final DateTime clockInTime;
+  final DateTime
+      clockInTime; // The time when the user clocked in for the current session
+  final DateTime?
+      totalHours; // Optional: Represents the total time already clocked in
+
   const ClockedInTimer({
     super.key,
     required this.clockInTime,
+    this.totalHours, // Optional parameter, no 'required' keyword
   });
 
   @override
@@ -222,21 +238,42 @@ class ClockedInTimer extends StatefulWidget {
 }
 
 class _ClockedInTimerState extends State<ClockedInTimer> {
-  Duration elapsedTime = const Duration();
+  late Duration
+      elapsedTime; // This will store the total elapsed time as a Duration
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
+    // Initialize elapsedTime with totalHours if it's not null; otherwise, start from Duration.zero
+    elapsedTime = widget.totalHours != null
+        ? _durationFromDateTime(widget.totalHours!)
+        : Duration.zero;
     _startTimer();
   }
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        elapsedTime = DateTime.now().difference(widget.clockInTime);
+        // Calculate the total elapsed time including the current clock-in session
+        Duration currentSessionDuration =
+            DateTime.now().difference(widget.clockInTime);
+
+        // Add current session duration to the total elapsed time
+        elapsedTime = currentSessionDuration +
+            (widget.totalHours != null
+                ? _durationFromDateTime(widget.totalHours!)
+                : Duration.zero);
       });
     });
+  }
+
+  // Helper function to convert DateTime to Duration since epoch
+  Duration _durationFromDateTime(DateTime dateTime) {
+    return Duration(
+        hours: dateTime.hour,
+        minutes: dateTime.minute,
+        seconds: dateTime.second);
   }
 
   @override
