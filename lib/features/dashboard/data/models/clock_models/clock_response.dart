@@ -1,36 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class ClockResponse {
-  final String result;
-  final String message;
-  final Clock clock;
-
-  ClockResponse({
-    required this.result,
-    required this.message,
-    required this.clock,
-  });
-
-  // Convert ClockResponse object to a Map (useful for JSON serialization)
-  Map<String, dynamic> toMap() {
-    return {
-      'result': result,
-      'message': message,
-      'clock': clock.toMap(),
-    };
-  }
-
-  // Create a ClockResponse object from a Map (useful for JSON deserialization)
-  factory ClockResponse.fromMap(Map<String, dynamic> map) {
-    return ClockResponse(
-      result: map['result'],
-      message: map['message'],
-      clock: Clock.fromMap(map['clock']),
-    );
-  }
-}
-
 class Clock {
   final DateTime? clockIn;
   final DateTime? clockOut;
@@ -93,12 +63,18 @@ class Clock {
   }
 
   factory Clock.fromMap(Map<String, dynamic> map) {
+    const cairoTimeZoneOffset = Duration(hours: 3);
+
     return Clock(
       clockIn: map['clock_in'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['clock_in'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(map['clock_in'] as int,
+                  isUtc: true)
+              .add(cairoTimeZoneOffset)
           : null,
       clockOut: map['clock_out'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['clock_out'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(map['clock_out'] as int,
+                  isUtc: true)
+              .add(cairoTimeZoneOffset)
           : null,
       duration: map['duration'] != null ? map['duration'] as int : null,
       userId: map['user_id'] != null ? map['user_id'] as int : null,
@@ -106,10 +82,14 @@ class Clock {
       locationType:
           map['location_type'] != null ? map['location_type'] as String : null,
       updatedAt: map['updated_at'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['updated_at'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(map['updated_at'] as int,
+                  isUtc: true)
+              .add(cairoTimeZoneOffset)
           : null,
       createdAt: map['created_at'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int,
+                  isUtc: true)
+              .add(cairoTimeZoneOffset)
           : null,
       id: map['id'] != null ? map['id'] as int : null,
     );

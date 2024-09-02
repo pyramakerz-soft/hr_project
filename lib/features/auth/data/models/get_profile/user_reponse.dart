@@ -5,6 +5,7 @@ class User {
   final String? image;
   final String? jobTitle;
   final String? roleName;
+  final String? totalHours;
   final bool? isClockedOut;
   final String? clockIn;
   final bool? isWorkFromHome;
@@ -19,6 +20,7 @@ class User {
     this.isClockedOut,
     this.clockIn,
     this.isWorkFromHome,
+    this.totalHours,
   });
 
   // Factory method to create a User from JSON
@@ -34,6 +36,7 @@ class User {
       isClockedOut: json['is_clocked_out'] == true ? true : false,
       clockIn: json['clockIn'] as String?,
       isWorkFromHome: json['work_home'] == true ? true : false,
+      totalHours: json['total_hours'] as String?,
     );
   }
 
@@ -48,7 +51,8 @@ class User {
       'role_name': roleName,
       'is_clocked_out': isClockedOut,
       'clockIn': clockIn,
-      'work_home': isWorkFromHome
+      'work_home': isWorkFromHome,
+      'total_hours': totalHours
     };
   }
 
@@ -62,6 +66,7 @@ class User {
     bool? isClockedOut,
     String? clockIn,
     bool? isWorkFromHome,
+    String? totalHours,
   }) {
     return User(
       id: id ?? this.id,
@@ -73,6 +78,7 @@ class User {
       isClockedOut: isClockedOut ?? this.isClockedOut,
       clockIn: clockIn ?? this.clockIn,
       isWorkFromHome: isWorkFromHome ?? this.isWorkFromHome,
+      totalHours: totalHours ?? this.totalHours,
     );
   }
 
@@ -93,6 +99,7 @@ class User {
         other.roleName == roleName &&
         other.isClockedOut == isClockedOut &&
         other.clockIn == clockIn &&
+        other.totalHours == totalHours &&
         other.isWorkFromHome == isWorkFromHome;
   }
 
@@ -105,6 +112,7 @@ class User {
         jobTitle.hashCode ^
         roleName.hashCode ^
         isClockedOut.hashCode ^
+        totalHours.hashCode ^
         clockIn.hashCode ^
         isWorkFromHome.hashCode;
   }

@@ -5,4 +5,5 @@ class ApiConstants {
   static const String userByToken = '$baseUrl/auth/user_by_token';
   static const String clockIn = '$baseUrl/clock_in';
   static const String clockOut = '$baseUrl/clock_out';
+  static const String getMyClocks = '$baseUrl/user_clocks';
 }

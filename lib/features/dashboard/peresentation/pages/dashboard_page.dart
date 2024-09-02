@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
 
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
@@ -10,6 +11,7 @@ import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/bloc/bloc/auth_bloc.dart';
+import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/big_btn.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/my_snackbar.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/app_bar_widget.dart';
@@ -17,6 +19,7 @@ import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/at
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_in_container.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/loading_indicater.dart';
 import 'package:pyramakerz_atendnace/features/home/presentation/cubit/home_cubit.dart';
+import 'package:pyramakerz_atendnace/features/shared_widget/custom_empty_page.dart';
 import 'package:pyramakerz_atendnace/features/shared_widget/custom_refresh_indicator.dart';
 
 @RoutePage()
@@ -48,7 +51,10 @@ class _DashboardPageState extends State<DashboardPage> {
         return state.maybeMap(
             orElse: () {
               //TO DO we need to make Empty page widget instead of empty Container
-              return user == null ? Container() : _HomeBody(user: widget.user!);
+              return user == null
+                  ? const CustomEmptyWidget(
+                      emptyScreenTypes: EmptyScreenTypes.notFound)
+                  : _HomeBody(user: widget.user!);
             },
             loadingLoginWithToken: (val) => const Scaffold(
                   body: LoadingIndicatorWidget(),
@@ -70,7 +76,7 @@ class _HomeBody extends StatelessWidget {
     return BlocProvider(
       create: (context) => getIt<HomeCubit>()
         ..init(user: user)
-        ..getCurrentLocation(),
+        ..getMyClocks(),
       child: Scaffold(
         body: BlocConsumer<HomeCubit, HomeState>(
           listener: (context, state) {
@@ -80,6 +86,19 @@ class _HomeBody extends StatelessWidget {
           },
           builder: (context, state) {
             final homeCubit = context.read<HomeCubit>();
+            final myClocks = state.myClocks;
+            if (state.isLocationPermissionGranted == false) {
+              return CustomEmptyWidget(
+                emptyScreenTypes: EmptyScreenTypes.noLocationAccess,
+                actionWidget: MainBtn(
+                  fun: () async {
+                    await homeCubit.askForPermission();
+                  },
+                  txt: 'Allow Access',
+                  color: AppColors.mainColor,
+                ),
+              );
+            }
             return SafeArea(
               child: Padding(
                 padding: REdgeInsets.symmetric(horizontal: 20.0),
@@ -109,14 +128,39 @@ class _HomeBody extends StatelessWidget {
                     _buildAttendanceTitle(),
                     20.toSizedBox,
                     Expanded(
-                      child: CustomRefreshIndicator(
-                        onRefresh: () async {},
-                        listView: ListView.separated(
-                          itemCount: 20,
-                          itemBuilder: (context, index) => AttendanceCard(),
-                          separatorBuilder: (_, index) => 20.toSizedBox,
-                        ),
-                      ),
+                      child: state.isGettingClocks
+                          ? const LoadingIndicatorWidget()
+                          : myClocks.isNotEmpty
+                              ? LazyLoadScrollView(
+                                  onEndOfPage: homeCubit.getMoreClocks,
+                                  child: CustomRefreshIndicator(
+                                    onRefresh: homeCubit.refresh,
+                                    listView: ListView.separated(
+                                      itemCount: myClocks.length + 1,
+                                      itemBuilder: (context, index) {
+                                        if (index == myClocks.length) {
+                                          return _buildPaginationLoading();
+                                        }
+                                        final currentClock = myClocks[index];
+                                        return AttendanceCard(
+                                          clockHistory: currentClock,
+                                        );
+                                      },
+                                      separatorBuilder: (_, index) =>
+                                          20.toSizedBox,
+                                    ),
+                                  ),
+                                )
+                              : CustomRefreshIndicator(
+                                  onRefresh: homeCubit.refresh,
+                                  listView: const SingleChildScrollView(
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    child: CustomEmptyWidget(
+                                      emptyScreenTypes:
+                                          EmptyScreenTypes.emptyAttendance,
+                                    ),
+                                  ),
+                                ),
                     )
                   ],
                 ),
@@ -124,6 +168,17 @@ class _HomeBody extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildPaginationLoading() {
+    return Builder(
+      builder: (context) => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        child: context.watch<HomeCubit>().state.isGettingMoreClocks
+            ? Transform.scale(scale: 0.7, child: const LoadingIndicatorWidget())
+            : const SizedBox(),
       ),
     );
   }
@@ -144,10 +199,6 @@ class _HomeBody extends StatelessWidget {
         'Attendance List'.toSubTitle(
             fontWeight: FontWeight.w700, fontSize: 24, color: AppColors.black),
         const Spacer(),
-        'See all'.toSubTitle(
-            color: AppColors.mainColor,
-            fontSize: 14,
-            fontWeight: FontWeight.w500)
       ],
     );
   }

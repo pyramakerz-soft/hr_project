@@ -79,6 +79,7 @@ dependencies:
   freezed: ^2.4.1
   flutter_sim_country_code: ^0.1.2
   geocoding: ^3.0.0
+  lazy_load_scrollview: ^1.3.0
 
 dev_dependencies:
   flutter_test:
@@ -152,6 +153,7 @@ flutter:
   assets:
     - assets/fonts/Poppins/
     - assets/images/
+    - assets/svgs/
 
   #   - images/a_dot_ham.jpeg
 
