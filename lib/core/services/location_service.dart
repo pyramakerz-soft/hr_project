@@ -24,22 +24,32 @@ class LocationServiceImpl implements LocationService {
 
   @override
   Future<bool> askForPermissionIfNeeded() async {
-    var permission = await Geolocator.checkPermission();
+    LocationPermission permission = await Geolocator.checkPermission();
 
+    // Handle the case where the permission is permanently denied
     if (permission == LocationPermission.deniedForever) {
+      // Prompt user to open settings
       await Geolocator.openAppSettings();
+      // After returning from settings, check the permission status again
+      permission = await Geolocator.checkPermission();
+      return permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always;
     }
 
+    // Handle the case where permission is denied (but not permanently)
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
+
+    // Check if permission is still not granted after the request
     if (permission != LocationPermission.whileInUse &&
         permission != LocationPermission.always) {
-      permission = await Geolocator.requestPermission();
+      // Return false if the permission is not granted after the first request attempt
+      return false;
     }
 
-    return permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always;
+    // Return true if permission is granted
+    return true;
   }
 
   @override
