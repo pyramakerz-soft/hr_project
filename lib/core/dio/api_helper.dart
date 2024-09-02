@@ -123,52 +123,78 @@ class ApiHelper {
     Future<dynamic> Function() function,
   ) async {
     try {
-      // stores what is returned from this function
+      // Attempt to call the function and get the response
       final Response response = await (function.call());
-      // he never reaches this line so we need to handle before call
+
+      // Check for success status codes
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
           response.statusCode == 204) {
         return Right(response);
       } else {
-        //TO DO why you don't return the left without any condition just remove the if
+        // Handle specific error responses with custom logic
         if (response.statusCode == 401 && response.data['detail'] != null) {
           return Left(ServerException(
-              errorMessageModel: ErrorMessageModel(
-                  statusCode: response.statusCode,
-                  message: response.data['message'],
-                  success: false)));
+            errorMessageModel: ErrorMessageModel(
+              statusCode: response.statusCode,
+              message: response.data['message'], // Use backend-provided message
+              success: false,
+            ),
+          ));
         }
       }
 
+      // General failure case
       return Left(ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode, message: somethingWentWrong)));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          message: response.data['message'] ??
+              somethingWentWrong, // Try to use backend message if available
+        ),
+      ));
     } on DioException catch (e) {
-      if (e.response == null || e.response?.statusCode == 404) {
-        return Left(ServerException(
-            errorMessageModel: ErrorMessageModel(
-                statusCode: e.response?.statusCode, message: e.message)));
-      }
-      if (e.response != null && e.response!.data != null) {
-        return Left(ServerException(
-            errorMessageModel: ErrorMessageModel(
-                statusCode: e.response?.statusCode,
-                message: e.response!.data!['message'])));
+      // Handle DioException cases
+
+      if (e.response == null) {
+        // If no response from the server
+        return const Left(ServerException(
+          errorMessageModel: ErrorMessageModel(
+            statusCode: 500,
+            message: 'No response from the server. Please try again later.',
+          ),
+        ));
       }
 
-      // if (e.response?.statusCode != 500 && e.response?.data['detail'] != null) {
-      //   return Left(UnAuthorized(e.response?.data['detail']));
-      // }
-      // if (e.response?.statusCode == 401 && e.response?.data['detail'] != null) {
-      //   return Left(UnAuthorized(e.response?.data['detail']));
-      // }
-      // if (e.response?.statusCode != 500 && e.response != null) {
-      //   return Left(AppFailure(e.response!));
-      // }
-      return Left(ServerException(
+      // If the response is available, but the status code indicates an error
+      if (e.response != null) {
+        final response = e.response!;
+        final errorMessage = response.data['message'] ??
+            'Unexpected error occurred'; // Extract backend message if available
+
+        return Left(ServerException(
           errorMessageModel: ErrorMessageModel(
-              statusCode: e.response?.statusCode, message: e.type.name)));
+            statusCode: response.statusCode,
+            message: errorMessage, // Use the backend message or a default one
+          ),
+        ));
+      }
+
+      // Handle general Dio error
+      return Left(ServerException(
+        errorMessageModel: ErrorMessageModel(
+          statusCode: e.response?.statusCode,
+          message:
+              e.message ?? e.type.name, // Use the Dio error message or type
+        ),
+      ));
+    } catch (e) {
+      // Handle any other types of errors
+      return const Left(ServerException(
+        errorMessageModel: ErrorMessageModel(
+          statusCode: 500,
+          message: 'An unexpected error occurred.',
+        ),
+      ));
     }
   }
 
