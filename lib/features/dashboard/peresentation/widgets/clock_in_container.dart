@@ -85,7 +85,9 @@ class _ClockContainerState extends State<ClockContainer> {
         10.toSizedBox,
         _buildClockOutButton(context),
         10.toSizedBox,
-        ClockedInTimer()
+        ClockedInTimer(
+          clockInTime: widget.clockInTime ?? DateTime.now(),
+        )
       ],
     );
   }
@@ -208,10 +210,48 @@ class _ClockContainerState extends State<ClockContainer> {
   }
 }
 
-class ClockedInTimer extends StatelessWidget {
+class ClockedInTimer extends StatefulWidget {
+  final DateTime clockInTime;
   const ClockedInTimer({
     super.key,
+    required this.clockInTime,
   });
+
+  @override
+  State<ClockedInTimer> createState() => _ClockedInTimerState();
+}
+
+class _ClockedInTimerState extends State<ClockedInTimer> {
+  Duration elapsedTime = const Duration();
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        elapsedTime = DateTime.now().difference(widget.clockInTime);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String hours = twoDigits(duration.inHours);
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$hours:$minutes:$seconds';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +267,7 @@ class ClockedInTimer extends StatelessWidget {
           VerticalDivider(
             color: AppColors.black,
           ),
-          '00:00:00'.toSubTitle(
+          _formatDuration(elapsedTime).toSubTitle(
             fontWeight: FontWeight.bold,
             fontSize: 13,
             color: AppColors.black,
