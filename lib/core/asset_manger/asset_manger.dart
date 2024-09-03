@@ -6,6 +6,7 @@ class AssetManger {
   static const background = '$imagepath/background.png';
 
   static const menu = '$imagepath/menu.svg';
+  static const logout = 'assets/svgs/logout.svg';
   static const pyramakerz = '$imagepath/pyramakerz.png';
 
   static const signout = '$imagepath/signout.svg';
