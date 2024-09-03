@@ -20,33 +20,34 @@ class AppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedFadeWidget(
-      onTap: () {
-        final apppref = getIt<AppPreferences>();
-        apppref.removeToken();
-        context.router.replaceAll([LoginRoute()]);
-      },
-      child: Row(
-        children: [
-          SvgPicture.asset(AssetManger.menu),
-          10.toSizedBoxHorizontal,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              'Hi, $firstName'.toSubTitle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-              ),
-              'Good Morning'.toSubTitle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w700,
-                color: AppColors.darkGrey,
-              ),
-            ],
-          ),
-        ],
-      ),
+    return Row(
+      children: [
+        SvgPicture.asset(AssetManger.menu),
+        10.toSizedBoxHorizontal,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            'Hi, $firstName'.toSubTitle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.black,
+            ),
+            'Good Morning'.toSubTitle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.darkGrey,
+            ),
+          ],
+        ),
+        const Spacer(),
+        AnimatedFadeWidget(
+            onTap: () {
+              final apppref = getIt<AppPreferences>();
+              apppref.removeToken();
+              context.router.replaceAll([LoginRoute()]);
+            },
+            child: SvgPicture.asset(AssetManger.logout)),
+      ],
     );
   }
 }

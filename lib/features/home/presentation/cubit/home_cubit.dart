@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -50,12 +48,14 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> _getCurrentLocation() async {
+  Future<bool> _getCurrentLocation() async {
     try {
       final position = await _locationService.getCurrentLocation();
       emit(state.copyWith(currentLocation: position));
+      return true;
     } catch (e) {
       emit(state.copyWith(status: HomeStateStatus.error, error: e.toString()));
+      return false;
     }
   }
 
@@ -67,10 +67,9 @@ class HomeCubit extends Cubit<HomeState> {
       final myClocksResponse =
           await _repository.getMyClocks(page: state.currentPage);
       final clocks = myClocksResponse.clocks;
-      final oldMyClocks = state.myClocks;
+      final myOldClocks = state.myClocks;
       emit(state.copyWith(
-          myClocks: [...oldMyClocks, ...clocks ?? []],
-          // myClocks: [],
+          myClocks: [...myOldClocks, ...clocks ?? []],
           totalPages: myClocksResponse.pagination?.lastPage ?? 1,
           myClocksStateStatus: MyClocksStateStatus.gotClocks));
     } on Failure catch (e) {
@@ -101,7 +100,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(
         state.copyWith(
           myClocksStateStatus: MyClocksStateStatus.gotClocks,
-          myClocks: [...oldMyClocks, ...clocks!],
+          myClocks: [...oldMyClocks, ...clocks ?? []],
         ),
       );
     } on Failure catch (e) {
@@ -128,6 +127,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> checkOut({required DateTime time}) async {
+    final isLocationGot = await _getCurrentLocation();
+    if (!isLocationGot) return;
     final oldUser = state.user;
     emit(state.copyWith(status: HomeStateStatus.loading));
     try {

@@ -166,14 +166,14 @@ class _LoginPageState extends State<LoginPage> {
               height: 60.h,
             ),
             20.toSizedBox,
-            const Text('Login',
+            Text('Login',
                 style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 30.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w600)),
-            const Text('Hello, please sign into your\naccount',
+            Text('Hello, please sign into your\naccount',
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w500)),
           ],

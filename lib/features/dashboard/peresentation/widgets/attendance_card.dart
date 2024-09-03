@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pyramakerz_atendnace/core/attendance/presentation/attendance_page.dart';
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
@@ -29,14 +31,14 @@ class AttendanceCard extends StatelessWidget {
               if (clockHistory.date != null)
                 (clockHistory.date!).toSubTitle(
                   fontWeight: FontWeight.w600,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   color: AppColors.black,
                 ),
               10.toSizedBox,
               if (clockHistory.day != null)
                 (clockHistory.day!).toSubTitle(
                   fontWeight: FontWeight.w400,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   color: AppColors.black,
                 ),
               Row(
@@ -66,10 +68,10 @@ class AttendanceCard extends StatelessWidget {
         children: [
           header.toSubTitle(
               fontWeight: FontWeight.w400,
-              fontSize: 12,
+              fontSize: 12.sp,
               color: AppColors.greyShadow),
           time.toSubTitle(
-              fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black)
+              fontWeight: FontWeight.w500, fontSize: 16.sp, color: Colors.black)
         ],
       );
 }
