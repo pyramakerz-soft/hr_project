@@ -4,16 +4,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:pyramakerz_atendnace/core/attendance/presentation/attendance_page.dart';
 import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
 
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
+import 'package:pyramakerz_atendnace/core/theme/animated_fade_widget.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/bloc/bloc/auth_bloc.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/big_btn.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/my_snackbar.dart';
-import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
+import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_history/clock_history.dart';
+
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/app_bar_widget.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/attendance_card.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_in_container.dart';
@@ -88,16 +91,7 @@ class _HomeBody extends StatelessWidget {
             final homeCubit = context.read<HomeCubit>();
             final myClocks = state.myClocks;
             if (state.isLocationPermissionGranted == false) {
-              return CustomEmptyWidget(
-                emptyScreenTypes: EmptyScreenTypes.noLocationAccess,
-                actionWidget: MainBtn(
-                  fun: () async {
-                    await homeCubit.askForPermission();
-                  },
-                  txt: 'Allow Access',
-                  color: AppColors.mainColor,
-                ),
-              );
+              return _buildNoLocationAccessPage(context: context);
             }
             return SafeArea(
               child: Padding(
@@ -125,49 +119,71 @@ class _HomeBody extends StatelessWidget {
                     else
                       const LoadingIndicatorWidget(),
                     20.toSizedBox,
-                    _buildAttendanceTitle(),
+                    _buildAttendanceTitle(context: context),
                     20.toSizedBox,
-                    Expanded(
-                      child: state.isGettingClocks
-                          ? const LoadingIndicatorWidget()
-                          : myClocks.isNotEmpty
-                              ? LazyLoadScrollView(
-                                  onEndOfPage: homeCubit.getMoreClocks,
-                                  child: CustomRefreshIndicator(
-                                    onRefresh: homeCubit.refresh,
-                                    listView: ListView.separated(
-                                      itemCount: myClocks.length + 1,
-                                      itemBuilder: (context, index) {
-                                        if (index == myClocks.length) {
-                                          return _buildPaginationLoading();
-                                        }
-                                        final currentClock = myClocks[index];
-                                        return AttendanceCard(
-                                          clockHistory: currentClock,
-                                        );
-                                      },
-                                      separatorBuilder: (_, index) =>
-                                          20.toSizedBox,
-                                    ),
-                                  ),
-                                )
-                              : CustomRefreshIndicator(
-                                  onRefresh: homeCubit.refresh,
-                                  listView: const SingleChildScrollView(
-                                    physics: AlwaysScrollableScrollPhysics(),
-                                    child: CustomEmptyWidget(
-                                      emptyScreenTypes:
-                                          EmptyScreenTypes.emptyAttendance,
-                                    ),
-                                  ),
-                                ),
-                    )
+                    _buildAttendances(state, myClocks, homeCubit, context)
                   ],
                 ),
               ),
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildAttendances(HomeState state, List<ClockHistory> myClocks,
+      HomeCubit homeCubit, BuildContext context) {
+    return Expanded(
+        child: state.isGettingClocks
+            ? const LoadingIndicatorWidget()
+            : myClocks.isNotEmpty
+                ? LazyLoadScrollView(
+                    onEndOfPage: homeCubit.getMoreClocks,
+                    child: CustomRefreshIndicator(
+                      onRefresh: homeCubit.refresh,
+                      listView: ListView.separated(
+                        itemCount: myClocks.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == myClocks.length) {
+                            return _buildPaginationLoading();
+                          }
+                          final currentClock = myClocks[index];
+                          return AttendanceCard(
+                            clockHistory: currentClock,
+                          );
+                        },
+                        separatorBuilder: (_, index) => const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Divider(thickness: 1),
+                        ),
+                      ),
+                    ),
+                  )
+                : CustomRefreshIndicator(
+                    onRefresh: homeCubit.refresh,
+                    listView: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        child: const CustomEmptyWidget(
+                          emptyScreenTypes: EmptyScreenTypes.emptyAttendance,
+                        ),
+                      ),
+                    ),
+                  ));
+  }
+
+  Widget _buildNoLocationAccessPage({required BuildContext context}) {
+    final homeCubit = context.read<HomeCubit>();
+    return CustomEmptyWidget(
+      emptyScreenTypes: EmptyScreenTypes.noLocationAccess,
+      actionWidget: MainBtn(
+        fun: () async {
+          await homeCubit.askForPermission();
+        },
+        txt: 'Allow Access',
+        color: AppColors.mainColor,
       ),
     );
   }
@@ -193,12 +209,27 @@ class _HomeBody extends StatelessWidget {
     }
   }
 
-  Widget _buildAttendanceTitle() {
+  Widget _buildAttendanceTitle({required BuildContext context}) {
     return Row(
       children: [
         'Attendance List'.toSubTitle(
-            fontWeight: FontWeight.w700, fontSize: 24, color: AppColors.black),
+            fontWeight: FontWeight.w700,
+            fontSize: 18.sp,
+            color: AppColors.black),
         const Spacer(),
+        AnimatedFadeWidget(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => AttendancePage(
+                        user: context.read<HomeCubit>().state.user!)));
+          },
+          child: 'See all'.toSubTitle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14.sp,
+              color: AppColors.mainColor),
+        ),
       ],
     );
   }
