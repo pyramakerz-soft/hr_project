@@ -31,7 +31,7 @@ class ProfileSection extends StatelessWidget {
                   style:
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
               5.toSizedBox,
-              Text(user.roleName ?? '',
+              Text(user.jobTitle ?? '',
                   style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 14.sp,
