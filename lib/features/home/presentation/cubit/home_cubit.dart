@@ -9,6 +9,7 @@ import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_histor
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/home/data/repository/home_repository.dart';
+
 part 'home_state.dart';
 
 @injectable
@@ -44,7 +45,7 @@ class HomeCubit extends Cubit<HomeState> {
     } else {
       emit(state.copyWith(
           isLocationPermissionGranted: false,
-          error: 'Permission not granted!'));
+          message: 'Permission not granted!'));
     }
   }
 
@@ -54,7 +55,8 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(currentLocation: position));
       return true;
     } catch (e) {
-      emit(state.copyWith(status: HomeStateStatus.error, error: e.toString()));
+      emit(
+          state.copyWith(status: HomeStateStatus.error, message: e.toString()));
       return false;
     }
   }
@@ -64,12 +66,13 @@ class HomeCubit extends Cubit<HomeState> {
     emit(
         state.copyWith(myClocksStateStatus: MyClocksStateStatus.gettingClocks));
     try {
-      final myClocksResponse =
-          await _repository.getMyClocks(page: state.currentPage);
+      emit(state.copyWith(currentPage: 1));
+      final myClocksResponse = await _repository.getMyClocks(page: 1);
+
       final clocks = myClocksResponse.clocks;
-      final myOldClocks = state.myClocks;
+
       emit(state.copyWith(
-          myClocks: [...myOldClocks, ...clocks ?? []],
+          myClocks: clocks ?? [],
           totalPages: myClocksResponse.pagination?.lastPage ?? 1,
           myClocksStateStatus: MyClocksStateStatus.gotClocks));
     } on Failure catch (e) {
@@ -77,12 +80,12 @@ class HomeCubit extends Cubit<HomeState> {
           myClocks: [],
           totalPages: 1,
           myClocksStateStatus: MyClocksStateStatus.gettingClocksError,
-          error: e.message));
+          message: e.message));
     } catch (e) {
       emit(state.copyWith(
           myClocks: [],
           myClocksStateStatus: MyClocksStateStatus.gettingClocksError,
-          error: 'An Error Occurred'));
+          message: 'An Error Occurred'));
     }
   }
 
@@ -108,13 +111,13 @@ class HomeCubit extends Cubit<HomeState> {
           myClocks: [],
           totalPages: 1,
           myClocksStateStatus: MyClocksStateStatus.gettingClocksError,
-          error: e.message));
+          message: e.message));
     } catch (e) {
       emit(state.copyWith(
           myClocks: [],
           totalPages: 1,
           myClocksStateStatus: MyClocksStateStatus.gettingClocksError,
-          error: 'An Error Occurred'));
+          message: 'An Error Occurred'));
     }
   }
 
@@ -144,7 +147,7 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       emit(state.copyWith(
         status: HomeStateStatus.error,
-        error: e.toString(),
+        message: e.toString(),
       ));
     }
   }

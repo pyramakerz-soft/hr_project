@@ -49,7 +49,7 @@ class HomeState {
   final String? formattedAddress;
   final Position? currentLocation;
   final Clock? workingData;
-  final String? error;
+  final String? message;
   final User? user;
   final List<ClockHistory> myClocks;
   final int currentPage;
@@ -63,7 +63,7 @@ class HomeState {
     this.workingData,
     this.currentLocation,
     this.user,
-    this.error,
+    this.message,
     this.myClocks = const [],
     this.currentPage = 1,
     this.totalPages,
@@ -79,7 +79,7 @@ class HomeState {
     Position? currentLocation,
     List<ClockHistory>? myClocks,
     User? user,
-    String? error,
+    String? message,
     int? currentPage,
     int? totalPages,
     bool? isLocationPermissionGranted,
@@ -93,7 +93,7 @@ class HomeState {
       myClocksStateStatus: myClocksStateStatus ?? this.myClocksStateStatus,
       formattedAddress: formattedAddress ?? this.formattedAddress,
       myClocks: myClocks ?? this.myClocks,
-      error: error ?? this.error,
+      message: message ?? this.message,
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,
       isLocationPermissionGranted:
@@ -116,7 +116,7 @@ class HomeState {
         other.currentPage == currentPage &&
         other.totalPages == totalPages &&
         other.isLocationPermissionGranted == isLocationPermissionGranted &&
-        other.error == error;
+        other.message == message;
   }
 
   @override
@@ -127,7 +127,7 @@ class HomeState {
       formattedAddress.hashCode ^
       user.hashCode ^
       myClocksStateStatus.hashCode ^
-      error.hashCode ^
+      message.hashCode ^
       Object.hashAll(myClocks) ^
       currentPage.hashCode ^
       totalPages.hashCode ^
