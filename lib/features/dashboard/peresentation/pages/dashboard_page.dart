@@ -47,16 +47,30 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+      listener: (context, state) {},
       builder: (context, state) {
+        final authBloc = context.read<AuthBloc>();
         return state.maybeMap(
             orElse: () {
-              //TO DO we need to make Empty page widget instead of empty Container
               return user == null
-                  ? const CustomEmptyWidget(
-                      emptyScreenTypes: EmptyScreenTypes.notFound)
+                  ? Scaffold(
+                      body: CustomRefreshIndicator(
+                        onRefresh: () async {
+                          authBloc.add(AuthEvent.getHomeData());
+                        },
+                        listView: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height,
+                            child: const CustomEmptyWidget(
+                              emptyScreenTypes: EmptyScreenTypes.notFound,
+                              description:
+                                  'Something went wrong, please try again',
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   : _HomeBody(user: widget.user!);
             },
             loadingLoginWithToken: (val) => const Scaffold(
@@ -84,7 +98,7 @@ class _HomeBody extends StatelessWidget {
         body: BlocConsumer<HomeCubit, HomeState>(
           listener: (context, state) {
             if (state.isError) {
-              MySnackbar.showError(context, state.error!);
+              MySnackbar.showError(context, state.message!);
             }
           },
           builder: (context, state) {
