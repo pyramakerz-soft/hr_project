@@ -19,7 +19,8 @@ class ClockInCubit extends Cubit<ClockInState> {
         _locationService = locationService,
         super(const ClockInState(status: ClockInStateStatus.initial));
 
-  Future<void> checkIn({required bool isFromSite}) async {
+  Future<void> checkIn() async {
+    final isFromSite = state.locationType == LocationType.site;
     try {
       final response = await _repository.checkIn(
         request: ClockRequest(
@@ -44,16 +45,14 @@ class ClockInCubit extends Cubit<ClockInState> {
     }
   }
 
-  // Future<void> checkOut({required ClockRequest request}) async {
-  //   emit(state.copyWith(status: HomeStateStatus.loading));
-  //   try {
-  //     final response = await _repository.checkOut(request: ClockRequest());
-  //     emit(state.copyWith(
-  //         status: HomeStateStatus.loaded, workingData: response));
-  //   } catch (e) {
-  //     emit(state.copyWith(status: HomeStateStatus.error, error: e.toString()));
-  //   }
-  // }
+  void onLocationTypeChanged(String? locationType) {
+    emit(
+      state.copyWith(
+        locationType:
+            LocationType.values.firstWhere((e) => e.name == locationType),
+      ),
+    );
+  }
 
   Future<void> getCurrentLocation() async {
     emit(state.copyWith(status: ClockInStateStatus.gettingAddress));

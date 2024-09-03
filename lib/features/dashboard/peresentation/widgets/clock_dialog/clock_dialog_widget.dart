@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
@@ -15,7 +14,6 @@ import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/my
 import 'package:pyramakerz_atendnace/features/clock_in/presentation/cubit/clock_in_cubit.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
-
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_dialog/clock_date_time_widget.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_dialog/dialog_profile_widget.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/loading_indicater.dart';
@@ -88,7 +86,10 @@ class ClockInDialog extends StatelessWidget {
                     user: user,
                   ),
                   16.toSizedBox,
-                  if (user.isWorkFromHome == true) SiteSelector(),
+                  if (user.isWorkFromHome == true)
+                    SiteSelector(
+                      onChanged: clockInCubit.onLocationTypeChanged,
+                    ),
                   16.toSizedBox,
                   ClockDateTimeWidget(),
                   16.toSizedBox,
@@ -97,9 +98,7 @@ class ClockInDialog extends StatelessWidget {
                   16.toSizedBox,
                   _DialogButtons(
                     onPositiveAction: () async {
-                      await clockInCubit.checkIn(
-                        isFromSite: true,
-                      );
+                      await clockInCubit.checkIn();
                     },
                     onNegativeAction: () {},
                   ),
@@ -172,20 +171,23 @@ class _DialogButtonsState extends State<_DialogButtons> {
     return Row(
       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Spacer(),
+        const Spacer(),
         btn(() {
           context.router.maybePop();
         }, 'Cancel', true),
         10.toSizedBoxHorizontal,
         _isLoading
-            ? Transform.scale(scale: 0.67, child: LoadingIndicatorWidget())
+            ? Transform.scale(
+                scale: 0.67, child: const LoadingIndicatorWidget())
             : btn(() {
-                final futureOr = widget.onPositiveAction!();
+                final futureOr = widget.onPositiveAction();
                 if (futureOr is Future) {
                   _setButtonBusy();
                   futureOr.whenComplete(() {
                     _setButtonReady();
-                    context.router.maybePop();
+                    if (context.mounted) {
+                      context.router.maybePop();
+                    }
                   });
                 }
               }, 'Clock In', false),
@@ -204,11 +206,16 @@ Widget btn(VoidCallback fun, String txt, bool invert) => AnimatedFadeWidget(
           borderRadius: BorderRadius.circular(10)),
       child: txt.toSubTitle(
           color: !invert ? AppColors.white : AppColors.darkGrey,
-          fontSize: 11,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w700),
     ));
 
 class SiteSelector extends StatelessWidget {
+  final void Function(String?)? onChanged;
+  const SiteSelector({
+    super.key,
+    this.onChanged,
+  });
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -219,14 +226,35 @@ class SiteSelector extends StatelessWidget {
         8.toSizedBox,
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: AppColors.mainColor,
+                )),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: AppColors.mainColor,
+              ),
+            ),
+            focusColor: AppColors.mainColorFaded,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: AppColors.mainColor,
+              ),
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-          items: [
-            DropdownMenuItem(child: Text('Choose'), value: 'choose'),
-            // Add more DropdownMenuItems here if needed
-          ],
-          onChanged: (value) {},
+          value: LocationType.values.first.name,
+          items: LocationType.values.map((e) {
+            return DropdownMenuItem(
+              value: e.name,
+              child: Text(e.name),
+            );
+          }).toList(),
+          onChanged: onChanged,
         ),
       ],
     );

@@ -108,7 +108,7 @@ class _ClockContainerState extends State<ClockContainer> {
         .format(widget.clockInTime ?? DateTime.now())
         .toSubTitle(
           fontWeight: FontWeight.w500,
-          fontSize: 13,
+          fontSize: 13.sp,
           color: AppColors.grey,
         );
   }
@@ -122,7 +122,7 @@ class _ClockContainerState extends State<ClockContainer> {
         10.toSizedBox,
         'Clock In'.toSubTitle(
           fontWeight: FontWeight.w500,
-          fontSize: 13,
+          fontSize: 13.sp,
           color: AppColors.black,
         )
       ],
@@ -183,16 +183,16 @@ class _ClockContainerState extends State<ClockContainer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          widget.user.roleName != null
-              ? widget.user.roleName!.toSubTitle(
-                  fontSize: 16,
+          widget.user.jobTitle != null
+              ? widget.user.jobTitle!.toSubTitle(
+                  fontSize: 16.sp,
                   color: Colors.black,
                   fontWeight: FontWeight.w600,
                 )
               : const SizedBox(),
           'Position'.toSubTitle(
             fontWeight: FontWeight.w500,
-            fontSize: 13,
+            fontSize: 13.sp,
             color: AppColors.grey,
           ),
         ],
@@ -206,13 +206,13 @@ class _ClockContainerState extends State<ClockContainer> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           formattedDate.toSubTitle(
-            fontSize: 16,
+            fontSize: 16.sp,
             color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
           'Date'.toSubTitle(
             fontWeight: FontWeight.w500,
-            fontSize: 13,
+            fontSize: 13.sp,
             color: AppColors.grey,
           ),
         ],
@@ -298,7 +298,7 @@ class _ClockedInTimerState extends State<ClockedInTimer> {
         children: [
           'You are Clocked in'.toSubTitle(
             fontWeight: FontWeight.bold,
-            fontSize: 13,
+            fontSize: 13.sp,
             color: AppColors.grey,
           ),
           VerticalDivider(
@@ -306,7 +306,7 @@ class _ClockedInTimerState extends State<ClockedInTimer> {
           ),
           _formatDuration(elapsedTime).toSubTitle(
             fontWeight: FontWeight.bold,
-            fontSize: 13,
+            fontSize: 13.sp,
             color: AppColors.black,
           ),
         ],

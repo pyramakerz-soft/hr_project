@@ -20,12 +20,14 @@ class ClockInState {
   final ClockInStateStatus status;
   final String? formattedAddress;
   final Position? currentLocation;
+  final LocationType locationType;
   final Clock? workingData;
   final String? message;
   const ClockInState({
     this.status = ClockInStateStatus.gettingAddress,
     this.formattedAddress,
     this.workingData,
+    this.locationType = LocationType.site,
     this.currentLocation,
     this.message,
   });
@@ -35,6 +37,7 @@ class ClockInState {
     Clock? workingData,
     String? formattedAddress,
     Position? currentLocation,
+    LocationType? locationType,
     String? message,
   }) {
     return ClockInState(
@@ -43,6 +46,7 @@ class ClockInState {
       currentLocation: currentLocation ?? this.currentLocation,
       formattedAddress: formattedAddress ?? this.formattedAddress,
       message: message ?? this.message,
+      locationType: locationType ?? this.locationType,
     );
   }
 
@@ -53,6 +57,7 @@ class ClockInState {
     return other.workingData == workingData &&
         other.status == status &&
         other.formattedAddress == formattedAddress &&
+        other.locationType == locationType &&
         other.currentLocation == currentLocation &&
         other.message == message;
   }
@@ -62,6 +67,7 @@ class ClockInState {
       workingData.hashCode ^
       status.hashCode ^
       formattedAddress.hashCode ^
+      locationType.hashCode ^
       message.hashCode ^
       currentLocation.hashCode;
 }
