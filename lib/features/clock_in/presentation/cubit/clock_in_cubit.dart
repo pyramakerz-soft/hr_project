@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
@@ -21,24 +22,31 @@ class ClockInCubit extends Cubit<ClockInState> {
 
   Future<void> checkIn() async {
     final isFromSite = state.locationType == LocationType.site;
+
+    // Create the clock request object
+    final clockRequest = ClockRequest(
+      longitude: state.currentLocation?.longitude ?? 0.0,
+      latitude: state.currentLocation?.latitude ?? 0.0,
+      isFromSite: isFromSite,
+      clockIn: DateTime.now(),
+    );
+
     try {
-      final response = await _repository.checkIn(
-        request: ClockRequest(
-          longitude: state.currentLocation?.longitude ?? 0.0,
-          latitude: state.currentLocation?.latitude ?? 0.0,
-          isFromSite: isFromSite,
-          clockIn: DateTime.now(),
-        ),
-      );
-      emit(
-        state.copyWith(
-            status: ClockInStateStatus.checkIn,
-            workingData: response,
-            message: 'Check In Successful'),
-      );
+      final response = await _repository.checkIn(request: clockRequest);
+
+      emit(state.copyWith(
+          status: ClockInStateStatus.checkIn,
+          workingData: response,
+          message: 'Check In Successful'));
     } on Failure catch (e) {
-      emit(
-          state.copyWith(status: ClockInStateStatus.error, message: e.message));
+      if (e.message.contains('connection') || e is SocketException) {
+        emit(state.copyWith(
+            status: ClockInStateStatus.cached,
+            message: 'Check In Cached due to network issue'));
+      } else {
+        emit(state.copyWith(
+            status: ClockInStateStatus.error, message: e.message));
+      }
     } catch (e) {
       emit(state.copyWith(
           status: ClockInStateStatus.error, message: 'Error Occurred'));
