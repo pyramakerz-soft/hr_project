@@ -124,7 +124,7 @@ class ApiHelper {
   ) async {
     try {
       // Attempt to call the function and get the response
-      final Response response = await (function.call());
+      final Response response = await function.call();
 
       // Check for success status codes
       if (response.statusCode == 200 ||
@@ -149,12 +149,26 @@ class ApiHelper {
         errorMessageModel: ErrorMessageModel(
           statusCode: response.statusCode,
           message: response.data['message'] ??
-              somethingWentWrong, // Try to use backend message if available
+              'Something went wrong', // Try to use backend message if available
         ),
       ));
     } on DioException catch (e) {
-      // Handle DioException cases
+      // Check for network-related Dio exceptions
+      if (e.type == DioErrorType.connectionTimeout ||
+          e.type == DioErrorType.sendTimeout ||
+          e.type == DioErrorType.receiveTimeout ||
+          e.type == DioErrorType.connectionError) {
+        // This indicates a connectivity issue, such as no network
+        return const Left(ServerException(
+          errorMessageModel: ErrorMessageModel(
+            statusCode: 500,
+            message:
+                'No network connection. Please check your internet and try again.',
+          ),
+        ));
+      }
 
+      // Handle cases where the response is null, indicating no response from the server
       if (e.response == null) {
         // If no response from the server
         return const Left(ServerException(
@@ -182,7 +196,7 @@ class ApiHelper {
       // Handle general Dio error
       return Left(ServerException(
         errorMessageModel: ErrorMessageModel(
-          statusCode: e.response?.statusCode,
+          statusCode: e.response?.statusCode ?? 500,
           message:
               e.message ?? e.type.name, // Use the Dio error message or type
         ),

@@ -32,10 +32,10 @@ class AttendancePage extends StatelessWidget {
               ? const LoadingIndicatorWidget()
               : myClocks.isNotEmpty
                   ? _buildAttendanceList(homeCubit, myClocks)
-                  : _buildEmptyPage(homeCubit, context);
+                  : _buildEmptyPage(homeCubit, context, state);
         }, listener: (context, state) {
           if (state.isError) {
-            MySnackbar.showError(context, state.error ?? '');
+            MySnackbar.showError(context, state.message ?? '');
           }
         }),
       ),
@@ -70,15 +70,17 @@ class AttendancePage extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyPage(HomeCubit homeCubit, BuildContext context) {
+  Widget _buildEmptyPage(
+      HomeCubit homeCubit, BuildContext context, HomeState state) {
     return CustomRefreshIndicator(
       onRefresh: homeCubit.refresh,
       listView: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
-          child: const CustomEmptyWidget(
+          child: CustomEmptyWidget(
             emptyScreenTypes: EmptyScreenTypes.emptyAttendance,
+            description: state.message,
           ),
         ),
       ),

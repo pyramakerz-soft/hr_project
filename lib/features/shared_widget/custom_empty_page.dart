@@ -47,9 +47,13 @@ extension EmptyScreenTypesExtension on EmptyScreenTypes {
 class CustomEmptyWidget extends StatelessWidget {
   final Widget? actionWidget;
   final EmptyScreenTypes emptyScreenTypes;
+  final String? description;
 
   const CustomEmptyWidget(
-      {super.key, this.actionWidget, required this.emptyScreenTypes});
+      {super.key,
+      this.actionWidget,
+      required this.emptyScreenTypes,
+      this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +78,7 @@ class CustomEmptyWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4, bottom: 28),
             child: Text(
-              emptyScreenTypes.getDescription(),
+              description ?? emptyScreenTypes.getDescription(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14.sp,

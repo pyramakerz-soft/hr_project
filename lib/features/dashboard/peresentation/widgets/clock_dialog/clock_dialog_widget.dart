@@ -49,6 +49,11 @@ class ClockInDialog extends StatelessWidget {
                 onSuccess(workingData: state.workingData);
                 Navigator.of(context).pop();
               }
+              if (state.isCached) {
+                MySnackbar.showError(context, state.message!);
+                onFailure();
+                Navigator.of(context).pop();
+              }
             },
             builder: (context, state) {
               final clockInCubit = context.read<ClockInCubit>();

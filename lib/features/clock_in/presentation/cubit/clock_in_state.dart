@@ -6,6 +6,7 @@ enum ClockInStateStatus {
   gotAddress,
   error,
   checkIn,
+  cached
 }
 
 extension AddressStateX on ClockInState {
@@ -14,6 +15,7 @@ extension AddressStateX on ClockInState {
   bool get isGotAddress => status == ClockInStateStatus.gotAddress;
   bool get isError => status == ClockInStateStatus.error;
   bool get isCheckIn => status == ClockInStateStatus.checkIn;
+  bool get isCached => status == ClockInStateStatus.cached;
 }
 
 class ClockInState {
