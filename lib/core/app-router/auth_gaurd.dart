@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pyramakerz_atendnace/core/error/failure.dart';
 import 'package:pyramakerz_atendnace/features/auth/domain/usecases/get_profile_usecase.dart';
 import 'package:pyramakerz_atendnace/core/app-preferances/app_preferances.dart';
 import 'package:pyramakerz_atendnace/core/app-router/app_router.gr.dart';
@@ -16,8 +17,14 @@ class AuthGuard extends AutoRouteGuard {
       final usecase = getIt<GetProfileUsecase>();
       final res = await usecase(const NoParameters());
       res.fold((l) {
-        Fluttertoast.showToast(msg: l.message);
+        if(l.message==noInternetConnection){
+        resolver.redirect( DashboardRoute(user: null));
+
+        }else{
+  Fluttertoast.showToast(msg: l.message);
         resolver.next(true);
+        }
+      
       }, (r) {
         resolver.redirect( DashboardRoute(user: r));
       });
