@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pyramakerz_atendnace/core/error/failure.dart';
+import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
@@ -13,17 +14,18 @@ part 'clock_in_state.dart';
 class ClockInCubit extends Cubit<ClockInState> {
   final HomeRepository _repository;
   final LocationService _locationService;
+  final CacheService _cacheService;
   ClockInCubit(
       {required HomeRepository repository,
-      required LocationService locationService})
+      required LocationService locationService,
+      required CacheService cacheService})
       : _repository = repository,
         _locationService = locationService,
+        _cacheService = cacheService,
         super(const ClockInState(status: ClockInStateStatus.initial));
 
   Future<void> checkIn() async {
     final isFromSite = state.locationType == LocationType.site;
-
-    // Create the clock request object
     final clockRequest = ClockRequest(
       longitude: state.currentLocation?.longitude ?? 0.0,
       latitude: state.currentLocation?.latitude ?? 0.0,
@@ -43,6 +45,7 @@ class ClockInCubit extends Cubit<ClockInState> {
         emit(state.copyWith(
             status: ClockInStateStatus.cached,
             message: 'Check In Cached due to network issue'));
+        _cacheRequest(request: clockRequest);
       } else {
         emit(state.copyWith(
             status: ClockInStateStatus.error, message: e.message));
@@ -50,6 +53,15 @@ class ClockInCubit extends Cubit<ClockInState> {
     } catch (e) {
       emit(state.copyWith(
           status: ClockInStateStatus.error, message: 'Error Occurred'));
+    }
+  }
+
+  Future<void> _cacheRequest({required ClockRequest request}) async {
+    try {
+      await _cacheService.cacheRequest(request: request);
+    } catch (e) {
+      emit(state.copyWith(
+          status: ClockInStateStatus.error, message: 'Cache Error Happens'));
     }
   }
 
