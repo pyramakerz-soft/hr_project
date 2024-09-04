@@ -47,7 +47,7 @@ extension CheckInStateStatusX on HomeState {
 
 class HomeState {
   final HomeStateStatus status;
-  final CheckInStateStatus? checkInStatus;
+  final CheckInStateStatus checkInStatus;
   final MyClocksStateStatus? myClocksStateStatus;
   final String? formattedAddress;
   final Position? currentLocation;
@@ -59,50 +59,54 @@ class HomeState {
   final int? totalPages;
   final bool? isLocationPermissionGranted;
   final ClockRequest? cachedRequest;
-  const HomeState(
-      {this.status = HomeStateStatus.initial,
-      this.myClocksStateStatus,
-      this.checkInStatus,
-      this.formattedAddress,
-      this.workingData,
-      this.currentLocation,
-      this.user,
-      this.message,
-      this.myClocks = const [],
-      this.currentPage = 1,
-      this.totalPages,
-      this.isLocationPermissionGranted,
-      this.cachedRequest});
 
-  HomeState copyWith(
-      {HomeStateStatus? status,
-      CheckInStateStatus? checkInStatus,
-      Clock? workingData,
-      MyClocksStateStatus? myClocksStateStatus,
-      String? formattedAddress,
-      Position? currentLocation,
-      List<ClockHistory>? myClocks,
-      User? user,
-      String? message,
-      int? currentPage,
-      int? totalPages,
-      bool? isLocationPermissionGranted,
-      ClockRequest? cachedRequest}) {
+  const HomeState({
+    this.status = HomeStateStatus.initial,
+    this.myClocksStateStatus,
+    this.checkInStatus = CheckInStateStatus.checkedIn,
+    this.formattedAddress,
+    this.workingData,
+    this.currentLocation,
+    this.user,
+    this.message,
+    this.myClocks = const [],
+    this.currentPage = 1,
+    this.totalPages,
+    this.isLocationPermissionGranted,
+    this.cachedRequest,
+  });
+
+  HomeState copyWith({
+    HomeStateStatus? status,
+    CheckInStateStatus? checkInStatus,
+    Clock? workingData,
+    MyClocksStateStatus? myClocksStateStatus,
+    String? formattedAddress,
+    Position? currentLocation,
+    List<ClockHistory>? myClocks,
+    User? user,
+    String? message,
+    int? currentPage,
+    int? totalPages,
+    bool? isLocationPermissionGranted,
+    ClockRequest? cachedRequest,
+  }) {
     return HomeState(
-        status: status ?? this.status,
-        workingData: workingData ?? this.workingData,
-        checkInStatus: checkInStatus ?? this.checkInStatus,
-        currentLocation: currentLocation ?? this.currentLocation,
-        user: user ?? this.user,
-        myClocksStateStatus: myClocksStateStatus ?? this.myClocksStateStatus,
-        formattedAddress: formattedAddress ?? this.formattedAddress,
-        myClocks: myClocks ?? this.myClocks,
-        message: message ?? this.message,
-        currentPage: currentPage ?? this.currentPage,
-        totalPages: totalPages ?? this.totalPages,
-        isLocationPermissionGranted:
-            isLocationPermissionGranted ?? this.isLocationPermissionGranted,
-        cachedRequest: cachedRequest ?? this.cachedRequest);
+      status: status ?? this.status,
+      workingData: workingData ?? this.workingData,
+      checkInStatus: checkInStatus ?? this.checkInStatus,
+      currentLocation: currentLocation ?? this.currentLocation,
+      user: user ?? this.user,
+      myClocksStateStatus: myClocksStateStatus ?? this.myClocksStateStatus,
+      formattedAddress: formattedAddress ?? this.formattedAddress,
+      myClocks: myClocks ?? this.myClocks,
+      message: message ?? this.message,
+      currentPage: currentPage ?? this.currentPage,
+      totalPages: totalPages ?? this.totalPages,
+      isLocationPermissionGranted:
+          isLocationPermissionGranted ?? this.isLocationPermissionGranted,
+      cachedRequest: cachedRequest ?? this.cachedRequest,
+    );
   }
 
   @override

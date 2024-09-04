@@ -134,50 +134,80 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void changeCheckInStatus({required Clock? workingData}) async {
+    final oldUser = state.user;
     emit(state.copyWith(
-        workingData: workingData ?? state.workingData,
-        checkInStatus: workingData == null
-            ? CheckInStateStatus.checkedIn
-            : CheckInStateStatus.checkedOut));
+      cachedRequest: null,
+      user: workingData == null ? null : oldUser?.copyWith(isClockedOut: false),
+      workingData: workingData ?? state.workingData,
+    ));
+    emit(state.copyWith(
+      checkInStatus: state.user?.isClockedOut == true
+          ? CheckInStateStatus.checkedIn
+          : CheckInStateStatus.checkedOut,
+    ));
+    getMyClocks();
   }
 
-  Future<void> checkOut({required DateTime time}) async {
+  Future<void> checkOut({DateTime? time, bool cached = false}) async {
     final isLocationGot = await _getCurrentLocation();
     if (!isLocationGot) return;
     final oldUser = state.user;
     emit(state.copyWith(status: HomeStateStatus.loading));
-    final request = ClockRequest(
-      longitude: state.currentLocation?.longitude ?? 0.0,
-      latitude: state.currentLocation?.latitude ?? 0.0,
-      clockOut: time,
-    );
+    final request = cached
+        ? state.cachedRequest
+        : ClockRequest(
+            longitude: state.currentLocation?.longitude ?? 0.0,
+            latitude: state.currentLocation?.latitude ?? 0.0,
+            clockOut: time,
+          );
     try {
-      await _repository.checkOut(request: request);
+      await _repository.checkOut(request: request!);
       emit(state.copyWith(
-          user: oldUser?.copyWith(isClockedOut: true),
-          checkInStatus: CheckInStateStatus.checkedOut));
-    } on Failure catch (e) {
-      if (e.message.toString().contains('connection')) {
-        emit(state.copyWith(cachedRequest: request));
-      }
-      emit(state.copyWith(
-        status: HomeStateStatus.error,
-        message: e.toString(),
+        user: oldUser?.copyWith(isClockedOut: true),
+        checkInStatus: CheckInStateStatus.checkedOut,
+        cachedRequest: null,
       ));
+    } on Failure catch (e) {
+      if (e.message.contains('connection') || e is SocketException) {
+        emit(state.copyWith(
+            status: HomeStateStatus.error,
+            message: 'Check Out Cached due to network issue'));
+        _cacheRequest(request: request!);
+      } else {
+        emit(state.copyWith(status: HomeStateStatus.error, message: e.message));
+      }
     } catch (e) {
       emit(state.copyWith(
-        status: HomeStateStatus.error,
-        message: 'An Error Occurred',
-      ));
+          status: HomeStateStatus.error, message: 'Error Occurred'));
     }
   }
 
-  Future<void> checkInWithCachedRequest() async {
+  Future<void> _cacheRequest({required ClockRequest request}) async {
+    try {
+      await _cacheService.cacheRequest(request: request);
+      emit(state.copyWith(cachedRequest: request));
+    } catch (e) {
+      emit(state.copyWith(
+          status: HomeStateStatus.error, message: 'Cache Error Happens'));
+    }
+  }
+
+  Future<void> resendCacheRequest() async {
     try {
       final cachedRequest = state.cachedRequest;
       if (cachedRequest == null) return;
-      final response = await _repository.checkIn(request: cachedRequest);
-      changeCheckInStatus(workingData: response);
+      final isCheckIn = cachedRequest.clockIn != null;
+
+      if (isCheckIn) {
+        final response = await _repository.checkIn(request: cachedRequest);
+
+        changeCheckInStatus(workingData: response);
+      } else {
+        await checkOut(time: cachedRequest.clockOut!, cached: true);
+        changeCheckInStatus(workingData: null);
+      }
+
+      emit(state.copyWith(cachedRequest: null));
     } on Failure catch (e) {
       emit(state.copyWith(status: HomeStateStatus.error, message: e.message));
     } catch (e) {
@@ -190,7 +220,9 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final cachedRequest = await _cacheService.getCachedRequest();
       if (cachedRequest == null) return false;
-      emit(state.copyWith(cachedRequest: cachedRequest));
+      emit(state.copyWith(
+        cachedRequest: cachedRequest,
+      ));
       return true;
     } catch (e) {
       log(e.toString());
@@ -206,7 +238,7 @@ class HomeCubit extends Cubit<HomeState> {
         case InternetStatus.connected:
           final hasCachedRequest = await _getCachedRequest();
           if (hasCachedRequest) {
-            await checkInWithCachedRequest();
+            resendCacheRequest();
           }
           break;
         case InternetStatus.disconnected:
