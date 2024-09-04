@@ -51,6 +51,23 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (context, state) {
         final authBloc = context.read<AuthBloc>();
         return state.maybeMap(
+            getHomeDataError: (value) => Scaffold(
+                  body: CustomRefreshIndicator(
+                    onRefresh: () async {
+                      authBloc.add(AuthEvent.getHomeData());
+                    },
+                    listView: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: CustomEmptyWidget(
+                          emptyScreenTypes: EmptyScreenTypes.notFound,
+                          description: value.err,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             orElse: () {
               return user == null
                   ? Scaffold(
