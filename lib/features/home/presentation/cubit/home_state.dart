@@ -5,6 +5,7 @@ enum HomeStateStatus {
   initial,
   loading,
   loaded,
+  checkIn,
   error,
 }
 
@@ -25,6 +26,8 @@ extension HomeStateX on HomeState {
   bool get isLoading => status == HomeStateStatus.loading;
   bool get isLoaded => status == HomeStateStatus.loaded;
   bool get isError => status == HomeStateStatus.error;
+
+  bool get isCheckIn => checkInStatus == CheckInStateStatus.checkedIn;
 }
 
 extension MyClocksStateX on HomeState {
@@ -55,50 +58,51 @@ class HomeState {
   final int currentPage;
   final int? totalPages;
   final bool? isLocationPermissionGranted;
-  const HomeState({
-    this.status = HomeStateStatus.initial,
-    this.myClocksStateStatus,
-    this.checkInStatus,
-    this.formattedAddress,
-    this.workingData,
-    this.currentLocation,
-    this.user,
-    this.message,
-    this.myClocks = const [],
-    this.currentPage = 1,
-    this.totalPages,
-    this.isLocationPermissionGranted,
-  });
+  final ClockRequest? cachedRequest;
+  const HomeState(
+      {this.status = HomeStateStatus.initial,
+      this.myClocksStateStatus,
+      this.checkInStatus,
+      this.formattedAddress,
+      this.workingData,
+      this.currentLocation,
+      this.user,
+      this.message,
+      this.myClocks = const [],
+      this.currentPage = 1,
+      this.totalPages,
+      this.isLocationPermissionGranted,
+      this.cachedRequest});
 
-  HomeState copyWith({
-    HomeStateStatus? status,
-    CheckInStateStatus? checkInStatus,
-    Clock? workingData,
-    MyClocksStateStatus? myClocksStateStatus,
-    String? formattedAddress,
-    Position? currentLocation,
-    List<ClockHistory>? myClocks,
-    User? user,
-    String? message,
-    int? currentPage,
-    int? totalPages,
-    bool? isLocationPermissionGranted,
-  }) {
+  HomeState copyWith(
+      {HomeStateStatus? status,
+      CheckInStateStatus? checkInStatus,
+      Clock? workingData,
+      MyClocksStateStatus? myClocksStateStatus,
+      String? formattedAddress,
+      Position? currentLocation,
+      List<ClockHistory>? myClocks,
+      User? user,
+      String? message,
+      int? currentPage,
+      int? totalPages,
+      bool? isLocationPermissionGranted,
+      ClockRequest? cachedRequest}) {
     return HomeState(
-      status: status ?? this.status,
-      workingData: workingData ?? this.workingData,
-      checkInStatus: checkInStatus ?? this.checkInStatus,
-      currentLocation: currentLocation ?? this.currentLocation,
-      user: user ?? this.user,
-      myClocksStateStatus: myClocksStateStatus ?? this.myClocksStateStatus,
-      formattedAddress: formattedAddress ?? this.formattedAddress,
-      myClocks: myClocks ?? this.myClocks,
-      message: message ?? this.message,
-      currentPage: currentPage ?? this.currentPage,
-      totalPages: totalPages ?? this.totalPages,
-      isLocationPermissionGranted:
-          isLocationPermissionGranted ?? this.isLocationPermissionGranted,
-    );
+        status: status ?? this.status,
+        workingData: workingData ?? this.workingData,
+        checkInStatus: checkInStatus ?? this.checkInStatus,
+        currentLocation: currentLocation ?? this.currentLocation,
+        user: user ?? this.user,
+        myClocksStateStatus: myClocksStateStatus ?? this.myClocksStateStatus,
+        formattedAddress: formattedAddress ?? this.formattedAddress,
+        myClocks: myClocks ?? this.myClocks,
+        message: message ?? this.message,
+        currentPage: currentPage ?? this.currentPage,
+        totalPages: totalPages ?? this.totalPages,
+        isLocationPermissionGranted:
+            isLocationPermissionGranted ?? this.isLocationPermissionGranted,
+        cachedRequest: cachedRequest ?? this.cachedRequest);
   }
 
   @override
@@ -115,6 +119,7 @@ class HomeState {
         listEquals(other.myClocks, myClocks) &&
         other.currentPage == currentPage &&
         other.totalPages == totalPages &&
+        other.cachedRequest == cachedRequest &&
         other.isLocationPermissionGranted == isLocationPermissionGranted &&
         other.message == message;
   }
@@ -129,6 +134,7 @@ class HomeState {
       myClocksStateStatus.hashCode ^
       message.hashCode ^
       Object.hashAll(myClocks) ^
+      cachedRequest.hashCode ^
       currentPage.hashCode ^
       totalPages.hashCode ^
       isLocationPermissionGranted.hashCode ^

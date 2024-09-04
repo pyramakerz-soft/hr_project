@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:pyramakerz_atendnace/core/error/failure.dart';
+import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_history/clock_history.dart';
@@ -16,11 +22,16 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   final HomeRepository _repository;
   final LocationService _locationService;
+  final CacheService _cacheService;
+  StreamSubscription<InternetStatus>? _internetStatusSubscription;
+
   HomeCubit(
       {required HomeRepository repository,
-      required LocationService locationService})
+      required LocationService locationService,
+      required CacheService cacheService})
       : _repository = repository,
         _locationService = locationService,
+        _cacheService = cacheService,
         super(const HomeState(status: HomeStateStatus.initial));
 
   Future<void> init({required User user}) async {
@@ -33,6 +44,7 @@ class HomeCubit extends Cubit<HomeState> {
       ),
     );
     await askForPermission();
+    _listenToInternetConnectivity();
   }
 
   Future<void> askForPermission() async {
@@ -134,21 +146,78 @@ class HomeCubit extends Cubit<HomeState> {
     if (!isLocationGot) return;
     final oldUser = state.user;
     emit(state.copyWith(status: HomeStateStatus.loading));
+    final request = ClockRequest(
+      longitude: state.currentLocation?.longitude ?? 0.0,
+      latitude: state.currentLocation?.latitude ?? 0.0,
+      clockOut: time,
+    );
     try {
-      await _repository.checkOut(
-          request: ClockRequest(
-        longitude: state.currentLocation?.longitude ?? 0.0,
-        latitude: state.currentLocation?.latitude ?? 0.0,
-        clockOut: time,
-      ));
+      await _repository.checkOut(request: request);
       emit(state.copyWith(
           user: oldUser?.copyWith(isClockedOut: true),
           checkInStatus: CheckInStateStatus.checkedOut));
-    } catch (e) {
+    } on Failure catch (e) {
+      if (e.message.toString().contains('connection')) {
+        emit(state.copyWith(cachedRequest: request));
+      }
       emit(state.copyWith(
         status: HomeStateStatus.error,
         message: e.toString(),
       ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: HomeStateStatus.error,
+        message: 'An Error Occurred',
+      ));
     }
+  }
+
+  Future<void> checkInWithCachedRequest() async {
+    try {
+      final cachedRequest = state.cachedRequest;
+      if (cachedRequest == null) return;
+      final response = await _repository.checkIn(request: cachedRequest);
+      changeCheckInStatus(workingData: response);
+    } on Failure catch (e) {
+      emit(state.copyWith(status: HomeStateStatus.error, message: e.message));
+    } catch (e) {
+      emit(state.copyWith(
+          status: HomeStateStatus.error, message: 'Error Occurred'));
+    }
+  }
+
+  Future<bool> _getCachedRequest() async {
+    try {
+      final cachedRequest = await _cacheService.getCachedRequest();
+      if (cachedRequest == null) return false;
+      emit(state.copyWith(cachedRequest: cachedRequest));
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
+  }
+
+  void _listenToInternetConnectivity() {
+    _internetStatusSubscription = InternetConnection()
+        .onStatusChange
+        .listen((InternetStatus status) async {
+      switch (status) {
+        case InternetStatus.connected:
+          final hasCachedRequest = await _getCachedRequest();
+          if (hasCachedRequest) {
+            await checkInWithCachedRequest();
+          }
+          break;
+        case InternetStatus.disconnected:
+          break;
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _internetStatusSubscription?.cancel();
+    return super.close();
   }
 }
