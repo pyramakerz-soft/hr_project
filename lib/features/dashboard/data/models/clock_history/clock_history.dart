@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class ClockHistoryResponse {
   final List<ClockHistory>? clocks;
   final Pagination? pagination;
@@ -90,6 +92,7 @@ class ClockHistory {
   final String? site;
   final String? formattedClockIn;
   final String? formattedClockOut;
+  final List<ClockHistory> otherClocks;
   ClockHistory({
     this.id,
     this.day,
@@ -101,7 +104,20 @@ class ClockHistory {
     this.site,
     this.formattedClockIn,
     this.formattedClockOut,
+    this.otherClocks = const [],
   });
+
+  String _convertTimeToEgyptLocalTime(String? timeStr) {
+    if (timeStr == null) return '-';
+    try {
+      final DateTime utcDateTime = DateFormat('hh:mma').parseUtc(timeStr);
+      final DateTime localDateTime = utcDateTime.toLocal();
+      final DateFormat outputFormat = DateFormat('hh:mm a');
+      return outputFormat.format(localDateTime);
+    } catch (e) {
+      return 'Invalid Time Format';
+    }
+  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -115,27 +131,33 @@ class ClockHistory {
       'site': site,
       'formattedClockIn': formattedClockIn,
       'formattedClockOut': formattedClockOut,
+      'otherClocks': otherClocks.map((x) => x.toMap()).toList(),
     };
   }
 
   factory ClockHistory.fromMap(Map<String, dynamic> map) {
     return ClockHistory(
-      id: map['id'] != null ? map['id'] as int : null,
-      day: map['Day'] != null ? map['Day'] as String : null,
-      date: map['Date'] != null ? map['Date'] as String : null,
-      clockIn: map['clockIn'] != null ? map['clockIn'] as String : null,
-      clockOut: map['clockOut'] != null ? map['clockOut'] as String : null,
-      totalHours:
-          map['totalHours'] != null ? map['totalHours'] as String : null,
-      userId: map['userId'] != null ? map['userId'] as int : null,
-      site: map['site'] != null ? map['site'] as String : null,
-      formattedClockIn: map['formattedClockIn'] != null
-          ? map['formattedClockIn'] as String
-          : null,
-      formattedClockOut: map['formattedClockOut'] != null
-          ? map['formattedClockOut'] as String
-          : null,
-    );
+        id: map['id'] != null ? map['id'] as int : null,
+        day: map['Day'] != null ? map['Day'] as String : null,
+        date: map['Date'] != null ? map['Date'] as String : null,
+        clockIn: ClockHistory()
+            ._convertTimeToEgyptLocalTime(map['clockIn'] as String?),
+        clockOut: ClockHistory()
+            ._convertTimeToEgyptLocalTime(map['clockOut'] as String?),
+        totalHours:
+            map['totalHours'] != null ? map['totalHours'] as String : null,
+        userId: map['userId'] != null ? map['userId'] as int : null,
+        site: map['site'] != null ? map['site'] as String : null,
+        formattedClockIn: map['formattedClockIn'] != null
+            ? map['formattedClockIn'] as String
+            : null,
+        formattedClockOut: map['formattedClockOut'] != null
+            ? map['formattedClockOut'] as String
+            : null,
+        otherClocks: map['otherClocks'] != null
+            ? List<ClockHistory>.from((map['otherClocks'] as List)
+                .map((x) => ClockHistory.fromMap(x as Map<String, dynamic>)))
+            : []);
   }
 
   String toJson() => json.encode(toMap());
