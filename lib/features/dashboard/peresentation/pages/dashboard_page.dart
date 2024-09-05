@@ -88,13 +88,33 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                     )
-                  : _HomeBody(user: widget.user!);
+                  : CustomRefreshIndicator(
+                      onRefresh: () async {
+                        authBloc.add(AuthEvent.getHomeData());
+                      },
+                      listView: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                            height: MediaQuery.of(context).size.height,
+                            child: _HomeBody(user: widget.user!)),
+                      ),
+                    );
             },
             loadingLoginWithToken: (val) => const Scaffold(
                   body: LoadingIndicatorWidget(),
                 ),
             // TO DO we need to make the home cubit is the one responsible for home data not the auth bloc
-            getHomeDataSucceed: (val) => _HomeBody(user: val.user));
+            getHomeDataSucceed: (val) => CustomRefreshIndicator(
+                  onRefresh: () async {
+                    authBloc.add(AuthEvent.getHomeData());
+                  },
+                  listView: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: _HomeBody(user: val.user)),
+                  ),
+                ));
       },
     );
   }
@@ -135,20 +155,21 @@ class _HomeBody extends StatelessWidget {
                       firstName: user.name,
                     ),
                     20.toSizedBox,
-                    if (state.checkInStatus != null)
-                      ClockContainer(
-                        user: user,
-                        onSuccess: homeCubit.changeCheckInStatus,
-                        isCheckedIn: state.isCheckedIn,
-                        onFailure: () {},
-                        onClockOut: () async {
-                          await homeCubit.checkOut(time: DateTime.now());
-                        },
-                        clockInTime:
-                            _parseTimeStringToDateTime(user.clockIn ?? ''),
-                      )
-                    else
-                      const LoadingIndicatorWidget(),
+                    ClockContainer(
+                      user: user,
+                      onSuccess: homeCubit.changeCheckInStatus,
+                      isCheckedIn: state.isCheckedIn,
+                      onFailure: () {},
+                      onClockOut: () async {
+                        final success =
+                            await homeCubit.checkOut(time: DateTime.now());
+                        if (!success && context.mounted) {
+                          MySnackbar.showError(context, state.message!);
+                        }
+                      },
+                      clockInTime:
+                          _parseTimeStringToDateTime(user.clockIn ?? ''),
+                    ),
                     20.toSizedBox,
                     _buildAttendanceTitle(context: context),
                     20.toSizedBox,
@@ -166,43 +187,44 @@ class _HomeBody extends StatelessWidget {
   Widget _buildAttendances(HomeState state, List<ClockHistory> myClocks,
       HomeCubit homeCubit, BuildContext context) {
     return Expanded(
-        child: state.isGettingClocks
-            ? const LoadingIndicatorWidget()
-            : myClocks.isNotEmpty
-                ? LazyLoadScrollView(
-                    onEndOfPage: homeCubit.getMoreClocks,
-                    child: CustomRefreshIndicator(
-                      onRefresh: homeCubit.refresh,
-                      listView: ListView.separated(
-                        itemCount: myClocks.length + 1,
-                        itemBuilder: (context, index) {
-                          if (index == myClocks.length) {
-                            return _buildPaginationLoading();
-                          }
-                          final currentClock = myClocks[index];
-                          return AttendanceCard(
-                            clockHistory: currentClock,
-                          );
-                        },
-                        separatorBuilder: (_, index) => const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: Divider(thickness: 1),
-                        ),
-                      ),
-                    ),
-                  )
-                : CustomRefreshIndicator(
+      child: state.isGettingClocks
+          ? const LoadingIndicatorWidget()
+          : myClocks.isNotEmpty
+              ? LazyLoadScrollView(
+                  onEndOfPage: homeCubit.getMoreClocks,
+                  child: CustomRefreshIndicator(
                     onRefresh: homeCubit.refresh,
-                    listView: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height / 2,
-                        child: const CustomEmptyWidget(
-                          emptyScreenTypes: EmptyScreenTypes.emptyAttendance,
-                        ),
+                    listView: ListView.separated(
+                      itemCount: myClocks.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == myClocks.length) {
+                          return _buildPaginationLoading();
+                        }
+                        final currentClock = myClocks[index];
+                        return AttendanceCard(
+                          clockHistory: currentClock,
+                        );
+                      },
+                      separatorBuilder: (_, index) => const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: Divider(thickness: 1),
                       ),
                     ),
-                  ));
+                  ),
+                )
+              : CustomRefreshIndicator(
+                  onRefresh: homeCubit.refresh,
+                  listView: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height / 2,
+                      child: const CustomEmptyWidget(
+                        emptyScreenTypes: EmptyScreenTypes.emptyAttendance,
+                      ),
+                    ),
+                  ),
+                ),
+    );
   }
 
   Widget _buildNoLocationAccessPage({required BuildContext context}) {
