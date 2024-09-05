@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:injectable/injectable.dart' as injectable;
+import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CacheService {
   Future<void> cacheRequest({required ClockRequest request});
   Future<ClockRequest?> getCachedRequest();
+  Future<void> cacheUser({required User user});
+  Future<User?> getCachedUser();
 }
 
 @injectable.Order(-3)
@@ -16,8 +19,8 @@ class CacheServiceImpl implements CacheService {
       : _sharedPreferences = sharedPreferences;
   @override
   Future<void> cacheRequest({required ClockRequest request}) async {
-    final jsonString = request.toJson();
-    await _sharedPreferences.setString('cachedRequest', jsonString);
+    final requestToJson = request.toJson();
+    await _sharedPreferences.setString('cachedRequest', requestToJson);
   }
 
   @override
@@ -27,17 +30,32 @@ class CacheServiceImpl implements CacheService {
     if (cachedClockRequestJson == null) return null;
 
     try {
-      print('Cached JSON String: $cachedClockRequestJson');
-      final dynamic decodedJson = jsonDecode(cachedClockRequestJson);
-      if (decodedJson is! Map<String, dynamic>) {
-        throw FormatException('Decoded JSON is not a Map<String, dynamic>');
-      }
-      final Map<String, dynamic> jsonMap = decodedJson;
+      final jsonMap = jsonDecode(cachedClockRequestJson);
       final clockRequest = ClockRequest.fromMap(jsonMap);
       await _sharedPreferences.remove('cachedRequest');
       return clockRequest;
     } catch (e) {
-      print('Error decoding cached request: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<void> cacheUser({required User user}) async {
+    final userToJson = json.encode(user.toJson());
+    await _sharedPreferences.remove('user');
+    await _sharedPreferences.setString('user', userToJson);
+  }
+
+  @override
+  Future<User?> getCachedUser() async {
+    final userJson = _sharedPreferences.getString('user');
+    if (userJson == null) return null;
+
+    try {
+      final jsonMap = jsonDecode(userJson);
+      final cachedUser = User.fromJson(jsonMap);
+      return cachedUser;
+    } catch (e) {
       return null;
     }
   }
