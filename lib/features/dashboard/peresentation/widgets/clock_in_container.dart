@@ -1,16 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
+import 'package:pyramakerz_atendnace/features/auth/persentation/login/login_page.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/big_btn.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_dialog/clock_dialog_widget.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/loading_indicater.dart';
+import 'package:pyramakerz_atendnace/features/home/presentation/cubit/home_cubit.dart';
 
 class ClockContainer extends StatefulWidget {
   const ClockContainer({
@@ -85,21 +88,24 @@ class _ClockContainerState extends State<ClockContainer> {
         10.toSizedBox,
         _buildClockOutButton(context),
         10.toSizedBox,
-        // ClockedInTimer(
-        //   clockInTime: widget.clockInTime ?? DateTime.now(),
-        //   totalHours: _parseTimeStringToDateTime(widget.user.totalHours ?? ''),
-        // )
+        ClockedInTimer(
+          initialDuration:
+              _parseDuration(context.watch<HomeCubit>().state.user?.totalHours),
+        )
       ],
     );
   }
 
-  DateTime? _parseTimeStringToDateTime(String timeString) {
-    DateFormat timeFormat = DateFormat("HH:mm:ss");
+  Duration _parseDuration(String? timeString) {
+    if (timeString == null) return Duration.zero;
     try {
-      DateTime dateTime = timeFormat.parse(timeString);
-      return dateTime;
+      final parts = timeString.split(':');
+      final hours = int.tryParse(parts[0]) ?? 0;
+      final minutes = int.tryParse(parts[1]) ?? 0;
+      final seconds = int.tryParse(parts[2]) ?? 0;
+      return Duration(hours: hours, minutes: minutes, seconds: seconds);
     } catch (e) {
-      return null;
+      return Duration.zero;
     }
   }
 
@@ -222,72 +228,45 @@ class _ClockContainerState extends State<ClockContainer> {
 }
 
 class ClockedInTimer extends StatefulWidget {
-  final DateTime
-      clockInTime; // The time when the user clocked in for the current session
-  final DateTime?
-      totalHours; // Optional: Represents the total time already clocked in
+  final Duration initialDuration;
 
-  const ClockedInTimer({
-    super.key,
-    required this.clockInTime,
-    this.totalHours, // Optional parameter, no 'required' keyword
-  });
+  const ClockedInTimer({super.key, required this.initialDuration});
 
   @override
   State<ClockedInTimer> createState() => _ClockedInTimerState();
 }
 
 class _ClockedInTimerState extends State<ClockedInTimer> {
-  late Duration
-      elapsedTime; // This will store the total elapsed time as a Duration
-  late Timer _timer;
+  late Duration _elapsedTime;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    // Initialize elapsedTime with totalHours if it's not null; otherwise, start from Duration.zero
-    elapsedTime = widget.totalHours != null
-        ? _durationFromDateTime(widget.totalHours!)
-        : Duration.zero;
+    _elapsedTime = widget.initialDuration;
     _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        // Calculate the total elapsed time including the current clock-in session
-        Duration currentSessionDuration =
-            DateTime.now().difference(widget.clockInTime);
-
-        // Add current session duration to the total elapsed time
-        elapsedTime = currentSessionDuration +
-            (widget.totalHours != null
-                ? _durationFromDateTime(widget.totalHours!)
-                : Duration.zero);
+        _elapsedTime += const Duration(seconds: 1);
       });
     });
   }
 
-  // Helper function to convert DateTime to Duration since epoch
-  Duration _durationFromDateTime(DateTime dateTime) {
-    return Duration(
-        hours: dateTime.hour,
-        minutes: dateTime.minute,
-        seconds: dateTime.second);
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String hours = twoDigits(duration.inHours);
-    String minutes = twoDigits(duration.inMinutes.remainder(60));
-    String seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$hours:$minutes:$seconds';
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$hours:$minutes:$seconds";
   }
 
   @override
@@ -304,7 +283,7 @@ class _ClockedInTimerState extends State<ClockedInTimer> {
           VerticalDivider(
             color: AppColors.black,
           ),
-          _formatDuration(elapsedTime).toSubTitle(
+          _formatDuration(_elapsedTime).toSubTitle(
             fontWeight: FontWeight.bold,
             fontSize: 13.sp,
             color: AppColors.black,
