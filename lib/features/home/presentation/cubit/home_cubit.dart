@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,7 +9,9 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:pyramakerz_atendnace/core/error/failure.dart';
 import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
+import 'package:pyramakerz_atendnace/core/usecase/base_usecase.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
+import 'package:pyramakerz_atendnace/features/auth/domain/usecases/get_profile_usecase.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_history/clock_history.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
@@ -23,15 +24,18 @@ class HomeCubit extends Cubit<HomeState> {
   final HomeRepository _repository;
   final LocationService _locationService;
   final CacheService _cacheService;
+  final GetProfileUsecase _getProfileUsecase;
   StreamSubscription<InternetStatus>? _internetStatusSubscription;
 
   HomeCubit(
       {required HomeRepository repository,
       required LocationService locationService,
-      required CacheService cacheService})
+      required CacheService cacheService,
+      required GetProfileUsecase getProfileUsecase})
       : _repository = repository,
         _locationService = locationService,
         _cacheService = cacheService,
+        _getProfileUsecase = getProfileUsecase,
         super(const HomeState(status: HomeStateStatus.initial));
 
   Future<void> init({required User user}) async {
@@ -134,10 +138,10 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void changeCheckInStatus({required Clock? workingData}) async {
-    final oldUser = state.user;
+    final response = await _getProfileUsecase(NoParameters());
+    response.fold((l) => null, (r) => emit(state.copyWith(user: r)));
     emit(state.copyWith(
       cachedRequest: null,
-      user: workingData == null ? null : oldUser?.copyWith(isClockedOut: false),
       workingData: workingData ?? state.workingData,
     ));
     emit(state.copyWith(
@@ -148,10 +152,14 @@ class HomeCubit extends Cubit<HomeState> {
     getMyClocks();
   }
 
-  Future<void> checkOut({DateTime? time, bool cached = false}) async {
+  Future<bool> checkOut({DateTime? time, bool cached = false}) async {
     final isLocationGot = await _getCurrentLocation();
-    if (!isLocationGot) return;
-    final oldUser = state.user;
+    if (!isLocationGot) {
+      emit(state.copyWith(
+        message: 'Cannot Find Your Location',
+      ));
+      return false;
+    }
     emit(state.copyWith(status: HomeStateStatus.loading));
     final request = cached
         ? state.cachedRequest
@@ -163,22 +171,22 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       await _repository.checkOut(request: request!);
       emit(state.copyWith(
-        user: oldUser?.copyWith(isClockedOut: true),
         checkInStatus: CheckInStateStatus.checkedOut,
         cachedRequest: null,
       ));
+      return true;
     } on Failure catch (e) {
       if (e.message.contains('connection') || e is SocketException) {
-        emit(state.copyWith(
-            status: HomeStateStatus.error,
-            message: 'Check Out Cached due to network issue'));
+        emit(state.copyWith(message: 'Check Out Cached due to network issue'));
         _cacheRequest(request: request!);
       } else {
-        emit(state.copyWith(status: HomeStateStatus.error, message: e.message));
+        emit(state.copyWith(message: e.message));
       }
+      return false;
     } catch (e) {
       emit(state.copyWith(
           status: HomeStateStatus.error, message: 'Error Occurred'));
+      return false;
     }
   }
 
