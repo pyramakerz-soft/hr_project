@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/location.dart';
+
 class User {
   final int? id;
   final String? name;
@@ -9,6 +12,7 @@ class User {
   final bool? isClockedOut;
   final String? clockIn;
   final bool? isWorkFromHome;
+  final List<Location> locations;
 
   User({
     this.id,
@@ -21,6 +25,7 @@ class User {
     this.clockIn,
     this.isWorkFromHome,
     this.totalHours,
+    this.locations = const [],
   });
 
   // Factory method to create a User from JSON
@@ -37,6 +42,10 @@ class User {
       clockIn: json['clockIn'] as String?,
       isWorkFromHome: json['work_home'] == true ? true : false,
       totalHours: json['total_hours'] as String?,
+      locations: json['assignedLocationsUser'] != null
+          ? List<Location>.from((json['assignedLocationsUser'] as List)
+              .map((x) => Location.fromMap(x))).toList()
+          : [],
     );
   }
 
@@ -52,7 +61,8 @@ class User {
       'is_clocked_out': isClockedOut,
       'clockIn': clockIn,
       'work_home': isWorkFromHome,
-      'total_hours': totalHours
+      'total_hours': totalHours,
+      'assignedLocationsUser': locations.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -67,6 +77,7 @@ class User {
     String? clockIn,
     bool? isWorkFromHome,
     String? totalHours,
+    List<Location>? locations,
   }) {
     return User(
       id: id ?? this.id,
@@ -79,6 +90,7 @@ class User {
       clockIn: clockIn ?? this.clockIn,
       isWorkFromHome: isWorkFromHome ?? this.isWorkFromHome,
       totalHours: totalHours ?? this.totalHours,
+      locations: locations ?? this.locations,
     );
   }
 
@@ -100,7 +112,8 @@ class User {
         other.isClockedOut == isClockedOut &&
         other.clockIn == clockIn &&
         other.totalHours == totalHours &&
-        other.isWorkFromHome == isWorkFromHome;
+        other.isWorkFromHome == isWorkFromHome &&
+        listEquals(other.locations, locations);
   }
 
   @override
@@ -114,6 +127,7 @@ class User {
         isClockedOut.hashCode ^
         totalHours.hashCode ^
         clockIn.hashCode ^
-        isWorkFromHome.hashCode;
+        isWorkFromHome.hashCode ^
+        locations.hashCode;
   }
 }
