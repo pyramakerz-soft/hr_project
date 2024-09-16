@@ -88,10 +88,10 @@ class _ClockContainerState extends State<ClockContainer> {
         10.toSizedBox,
         _buildClockOutButton(context),
         10.toSizedBox,
-        ClockedInTimer(
-          initialDuration:
-              _parseDuration(context.watch<HomeCubit>().state.user?.totalHours),
-        )
+        // ClockedInTimer(
+        //   initialDuration:
+        //       _parseDuration(context.watch<HomeCubit>().state.user?.totalHours),
+        // )
       ],
     );
   }
