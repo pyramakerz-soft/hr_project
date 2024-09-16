@@ -92,8 +92,22 @@ class ClockInDialog extends StatelessWidget {
                   ),
                   16.toSizedBox,
                   if (user.isWorkFromHome == true)
-                    SiteSelector(
-                      onChanged: clockInCubit.onLocationTypeChanged,
+                    MyDropDownList(
+                      title: 'Select location type',
+                      itemLabel: (e) => e.name,
+                      items: LocationType.values,
+                      onChanged: (item) =>
+                          clockInCubit.onLocationTypeChanged(item?.name),
+                    ),
+                  if (user.locations.isNotEmpty)
+                    MyDropDownList(
+                      title: 'Select site',
+                      itemLabel: (e) => e.locationName ?? '',
+                      items: user.locations,
+                      onChanged: (item) =>
+                          clockInCubit.onSiteSelected(item?.locationId),
+                      isEnabled: state.isLocationSitesEnabled ||
+                          user.isWorkFromHome == false,
                     ),
                   16.toSizedBox,
                   ClockDateTimeWidget(),
@@ -215,27 +229,37 @@ Widget btn(VoidCallback fun, String txt, bool invert) => AnimatedFadeWidget(
           fontWeight: FontWeight.w700),
     ));
 
-class SiteSelector extends StatelessWidget {
-  final void Function(String?)? onChanged;
-  const SiteSelector({
+class MyDropDownList<T> extends StatelessWidget {
+  final String title;
+  final List<T> items;
+  final String Function(T) itemLabel;
+  final void Function(T?)? onChanged;
+  final bool isEnabled;
+
+  const MyDropDownList({
     super.key,
     this.onChanged,
+    required this.title,
+    required this.items,
+    required this.itemLabel,
+    this.isEnabled = true,
   });
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select the site',
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500)),
-        8.toSizedBox,
-        DropdownButtonFormField<String>(
+        12.toSizedBox, // Assuming 'toSizedBox' is an extension for spacing
+
+        DropdownButtonFormField<T>(
           decoration: InputDecoration(
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: AppColors.mainColor,
-                )),
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: AppColors.mainColor,
+              ),
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(
@@ -252,14 +276,15 @@ class SiteSelector extends StatelessWidget {
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-          value: LocationType.values.first.name,
-          items: LocationType.values.map((e) {
+          value: null,
+          hint: Text(title),
+          items: items.map((T e) {
             return DropdownMenuItem(
-              value: e.name,
-              child: Text(e.name),
+              value: e,
+              child: Text(itemLabel(e)),
             );
           }).toList(),
-          onChanged: onChanged,
+          onChanged: isEnabled ? onChanged : null,
         ),
       ],
     );
