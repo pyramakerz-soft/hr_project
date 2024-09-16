@@ -119,6 +119,18 @@ class ClockHistory {
     }
   }
 
+  String _convertTimeToUtc(String? timeStr) {
+    if (timeStr == null) return '-';
+    try {
+      final DateTime localTime = DateFormat('hh:mma').parse(timeStr);
+      final DateTime utcDateTime = localTime.toUtc();
+      final DateFormat outputFormat = DateFormat('hh:mm a');
+      return outputFormat.format(utcDateTime);
+    } catch (e) {
+      return 'Invalid Time Format';
+    }
+  }
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
@@ -129,8 +141,8 @@ class ClockHistory {
       'totalHours': totalHours,
       'userId': userId,
       'site': site,
-      'formattedClockIn': formattedClockIn,
-      'formattedClockOut': formattedClockOut,
+      'formattedClockIn': ClockHistory()._convertTimeToUtc(formattedClockIn),
+      'formattedClockOut': ClockHistory()._convertTimeToUtc(formattedClockOut),
       'otherClocks': otherClocks.map((x) => x.toMap()).toList(),
     };
   }
