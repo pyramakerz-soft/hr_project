@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
+import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/intl.dart';
 
 class ClockHistoryResponse {
@@ -111,9 +111,10 @@ class ClockHistory {
     if (timeStr == null) return '-';
     try {
       final DateTime utcDateTime = DateFormat('hh:mma').parseUtc(timeStr);
-      final DateTime localDateTime = utcDateTime.toLocal();
+      final tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(utcDateTime, tz.getLocation('Africa/Cairo'));
       final DateFormat outputFormat = DateFormat('hh:mm a');
-      return outputFormat.format(localDateTime);
+      return outputFormat.format(egyptDateTime);
     } catch (e) {
       return 'Invalid Time Format';
     }
@@ -123,7 +124,9 @@ class ClockHistory {
     if (timeStr == null) return '-';
     try {
       final DateTime localTime = DateFormat('hh:mma').parse(timeStr);
-      final DateTime utcDateTime = localTime.toUtc();
+      final tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(localTime, tz.getLocation('Africa/Cairo'));
+      final DateTime utcDateTime = egyptDateTime.toUtc();
       final DateFormat outputFormat = DateFormat('hh:mm a');
       return outputFormat.format(utcDateTime);
     } catch (e) {

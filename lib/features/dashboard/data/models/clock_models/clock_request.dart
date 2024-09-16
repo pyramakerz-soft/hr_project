@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
+import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/intl.dart';
 
 class ClockRequest {
@@ -19,25 +19,48 @@ class ClockRequest {
     this.clockOut,
     this.locationId,
   });
+
   DateTime? _convertUTCToEgyptLocalTime(String? utcTimeStr) {
     if (utcTimeStr == null) return null;
-    final DateTime utcDateTime =
-        DateFormat('yyyy-MM-dd HH:mm:ss').parseUtc(utcTimeStr);
-    final localDateStr = utcDateTime.toLocal().toString();
-    final DateTime localDate = DateTime.parse(localDateStr);
-    return localDate;
+
+    try {
+      final DateTime utcDateTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parseUtc(utcTimeStr);
+      final tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(utcDateTime, tz.getLocation('Africa/Cairo'));
+      return egyptDateTime;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  String _convertEgyptLocalTimeToUTCString(DateTime? localDateTime) {
+    if (localDateTime == null) return 'Invalid DateTime';
+    try {
+      final tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(localDateTime, tz.getLocation('Africa/Cairo'));
+
+      final DateTime utcDateTime = egyptDateTime.toUtc();
+
+      final DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      return dateFormat.format(utcDateTime);
+    } catch (e) {
+      return 'Invalid DateTime Format';
+    }
   }
 
   Map<String, dynamic> toMap() {
-    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
     return <String, dynamic>{
       'latitude': latitude,
       'longitude': longitude,
       'location_type':
           isFromSite == true ? LocationType.site.name : LocationType.home.name,
-      'clock_in': clockIn != null ? dateFormat.format(clockIn!.toUtc()) : null,
-      'clock_out':
-          clockOut != null ? dateFormat.format(clockOut!.toUtc()) : null,
+      'clock_in': clockIn != null
+          ? ClockRequest()._convertEgyptLocalTimeToUTCString(clockIn)
+          : null,
+      'clock_out': clockOut != null
+          ? ClockRequest()._convertEgyptLocalTimeToUTCString(clockOut)
+          : null,
       'location_id': locationId
     };
   }
