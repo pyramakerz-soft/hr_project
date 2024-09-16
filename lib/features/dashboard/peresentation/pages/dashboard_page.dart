@@ -104,6 +104,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   body: LoadingIndicatorWidget(),
                 ),
             // TO DO we need to make the home cubit is the one responsible for home data not the auth bloc
+
             getHomeDataSucceed: (val) => CustomRefreshIndicator(
                   onRefresh: () async {
                     authBloc.add(AuthEvent.getHomeData());
@@ -218,8 +219,9 @@ class _HomeBody extends StatelessWidget {
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
-                      child: const CustomEmptyWidget(
+                      child: CustomEmptyWidget(
                         emptyScreenTypes: EmptyScreenTypes.emptyAttendance,
+                        description: state.message,
                       ),
                     ),
                   ),
@@ -263,6 +265,8 @@ class _HomeBody extends StatelessWidget {
   }
 
   Widget _buildAttendanceTitle({required BuildContext context}) {
+    final homeCubit = context.read<HomeCubit>();
+    final state = homeCubit.state;
     return Row(
       children: [
         'Attendance List'.toSubTitle(
@@ -270,19 +274,21 @@ class _HomeBody extends StatelessWidget {
             fontSize: 18.sp,
             color: AppColors.black),
         const Spacer(),
-        AnimatedFadeWidget(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AttendancePage(
-                        user: context.read<HomeCubit>().state.user!)));
-          },
-          child: 'See all'.toSubTitle(
-              fontWeight: FontWeight.w400,
-              fontSize: 14.sp,
-              color: AppColors.mainColor),
-        ),
+        state.myClocks.isNotEmpty
+            ? AnimatedFadeWidget(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => AttendancePage(
+                              user: context.read<HomeCubit>().state.user!)));
+                },
+                child: 'See all'.toSubTitle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14.sp,
+                    color: AppColors.mainColor),
+              )
+            : const SizedBox(),
       ],
     );
   }
