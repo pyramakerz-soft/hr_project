@@ -110,8 +110,8 @@ class ClockInCubit extends Cubit<ClockInState> {
     } catch (e) {
       emit(
         state.copyWith(
-          status: ClockInStateStatus.error,
-          message: e.toString(),
+          status: ClockInStateStatus.gotAddress,
+          formattedAddress: 'Network needed to display current address.',
         ),
       );
     }
