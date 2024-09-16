@@ -177,16 +177,14 @@ class HomeCubit extends Cubit<HomeState> {
       return true;
     } on Failure catch (e) {
       if (e.message.contains('connection') || e is SocketException) {
-        emit(state.copyWith(message: 'Check Out Cached due to network issue'));
         _cacheRequest(request: request!);
-      } else {
-        emit(state.copyWith(message: e.message));
       }
+      emit(state.copyWith(message: e.message));
       return false;
     } catch (e) {
       emit(state.copyWith(
           status: HomeStateStatus.error, message: 'Error Occurred'));
-      return false;
+      return true;
     }
   }
 
