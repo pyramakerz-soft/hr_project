@@ -30,6 +30,7 @@ class ClockInCubit extends Cubit<ClockInState> {
       longitude: state.currentLocation?.longitude ?? 0.0,
       latitude: state.currentLocation?.latitude ?? 0.0,
       isFromSite: isFromSite,
+      locationId: state.selectedSite,
       clockIn: DateTime.now(),
     );
 
@@ -65,11 +66,18 @@ class ClockInCubit extends Cubit<ClockInState> {
     }
   }
 
+  void onSiteSelected(int? siteId) {
+    emit(
+      state.copyWith(selectedSite: siteId),
+    );
+  }
+
   void onLocationTypeChanged(String? locationType) {
     emit(
       state.copyWith(
         locationType:
             LocationType.values.firstWhere((e) => e.name == locationType),
+        isLocationSitesEnabled: locationType == LocationType.site.name,
       ),
     );
   }

@@ -25,6 +25,8 @@ class ClockInState {
   final LocationType locationType;
   final Clock? workingData;
   final String? message;
+  final bool isLocationSitesEnabled;
+  final int? selectedSite;
   const ClockInState({
     this.status = ClockInStateStatus.gettingAddress,
     this.formattedAddress,
@@ -32,24 +34,29 @@ class ClockInState {
     this.locationType = LocationType.site,
     this.currentLocation,
     this.message,
+    this.selectedSite,
+    this.isLocationSitesEnabled = false,
   });
 
-  ClockInState copyWith({
-    ClockInStateStatus? status,
-    Clock? workingData,
-    String? formattedAddress,
-    Position? currentLocation,
-    LocationType? locationType,
-    String? message,
-  }) {
+  ClockInState copyWith(
+      {ClockInStateStatus? status,
+      Clock? workingData,
+      String? formattedAddress,
+      Position? currentLocation,
+      LocationType? locationType,
+      String? message,
+      bool? isLocationSitesEnabled,
+      int? selectedSite}) {
     return ClockInState(
-      workingData: workingData ?? this.workingData,
-      status: status ?? this.status,
-      currentLocation: currentLocation ?? this.currentLocation,
-      formattedAddress: formattedAddress ?? this.formattedAddress,
-      message: message ?? this.message,
-      locationType: locationType ?? this.locationType,
-    );
+        workingData: workingData ?? this.workingData,
+        status: status ?? this.status,
+        currentLocation: currentLocation ?? this.currentLocation,
+        formattedAddress: formattedAddress ?? this.formattedAddress,
+        message: message ?? this.message,
+        locationType: locationType ?? this.locationType,
+        isLocationSitesEnabled:
+            isLocationSitesEnabled ?? this.isLocationSitesEnabled,
+        selectedSite: selectedSite ?? this.selectedSite);
   }
 
   @override
@@ -61,7 +68,9 @@ class ClockInState {
         other.formattedAddress == formattedAddress &&
         other.locationType == locationType &&
         other.currentLocation == currentLocation &&
-        other.message == message;
+        other.message == message &&
+        other.isLocationSitesEnabled == isLocationSitesEnabled &&
+        other.selectedSite == selectedSite;
   }
 
   @override
@@ -71,5 +80,7 @@ class ClockInState {
       formattedAddress.hashCode ^
       locationType.hashCode ^
       message.hashCode ^
-      currentLocation.hashCode;
+      currentLocation.hashCode ^
+      isLocationSitesEnabled.hashCode ^
+      selectedSite.hashCode;
 }
