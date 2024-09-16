@@ -6,11 +6,19 @@ import 'package:pyramakerz_atendnace/core/app-router/app_router.dart';
 import 'package:pyramakerz_atendnace/core/asset_manger/app_string.dart';
 import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
 import 'package:pyramakerz_atendnace/my_blocs_provider.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await configureDependencies(); 
-    runApp(const MyApp());
+  await configureDependencies();
+  initializeTimeZones();
+  runApp(const MyApp());
+}
+
+void initializeTimeZones() {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
 }
 
 class MyApp extends StatefulWidget {
@@ -21,30 +29,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final appRouter = AppRouter( );
+  final appRouter = AppRouter();
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-        return MultiBlocProvider(
-          providers: MyBlockProviders.getAllProvider(),
-          child: ScreenUtilInit(
-            designSize: const Size(375, 812),
-            builder: (_, __) => MaterialApp.router(
-           
-              debugShowCheckedModeBanner: false,
-              title: 'Pyra makerz Atendance',
-              theme: ThemeData(
-                fontFamily: AppStrings.Poppins,
-              ),
-              routerDelegate: appRouter.delegate(),
-              routeInformationParser: appRouter.defaultRouteParser(),
-              // home: TrainingSettingsPage(
-              //   changeProgramModel: (User.initial()).getProgramFromUser(),
-          
-              // )
-            ),
+    return MultiBlocProvider(
+      providers: MyBlockProviders.getAllProvider(),
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (_, __) => MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'Pyra makerz Atendance',
+          theme: ThemeData(
+            fontFamily: AppStrings.Poppins,
           ),
-        );
+          routerDelegate: appRouter.delegate(),
+          routeInformationParser: appRouter.defaultRouteParser(),
+          // home: TrainingSettingsPage(
+          //   changeProgramModel: (User.initial()).getProgramFromUser(),
+
+          // )
+        ),
+      ),
+    );
   }
 }
