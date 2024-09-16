@@ -17,50 +17,46 @@ class ClockDateTimeWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 2,
-              width: 30.w,
-              decoration: BoxDecoration(
-                color: AppColors.mainColor,
-              ),
-            ),
-            3.toSizedBox,
-            Text('Date',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.darkGrey,
-                    fontSize: 12.sp)),
-            Text(
-              formattedDate,
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-            ),
-          ],
+        TitleIndicator(title: 'Date', description: formattedDate),
+        TitleIndicator(title: 'Time', description: formattedTime),
+      ],
+    );
+  }
+}
+
+class TitleIndicator extends StatelessWidget {
+  const TitleIndicator({
+    super.key,
+    required this.title,
+    this.description,
+  });
+  final String title;
+  final String? description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 2,
+          width: 30.w,
+          decoration: const BoxDecoration(
+            color: AppColors.mainColor,
+          ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 2,
-              width: 30.w,
-              decoration: BoxDecoration(
-                color: AppColors.mainColor,
-              ),
-            ),
-            3.toSizedBox,
-            Text('Time',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.darkGrey,
-                    fontSize: 12.sp)),
-            Text(
-              formattedTime,
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
+        3.toSizedBox,
+        Text(title,
+            style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: AppColors.darkGrey,
+                fontSize: 12.sp)),
+        description != null
+            ? Text(
+                description!,
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              )
+            : const SizedBox(),
       ],
     );
   }
