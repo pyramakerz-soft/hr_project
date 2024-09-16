@@ -9,6 +9,7 @@ class ClockRequest {
   final bool? isFromSite;
   final DateTime? clockIn;
   final DateTime? clockOut;
+  final int? locationId;
 
   ClockRequest({
     this.latitude,
@@ -16,6 +17,7 @@ class ClockRequest {
     this.isFromSite,
     this.clockIn,
     this.clockOut,
+    this.locationId,
   });
   DateTime? _convertUTCToEgyptLocalTime(String? utcTimeStr) {
     if (utcTimeStr == null) return null;
@@ -36,15 +38,19 @@ class ClockRequest {
       'clock_in': clockIn != null ? dateFormat.format(clockIn!.toUtc()) : null,
       'clock_out':
           clockOut != null ? dateFormat.format(clockOut!.toUtc()) : null,
+      'location_id': locationId
     };
   }
 
   factory ClockRequest.fromMap(Map<String, dynamic> map) {
     return ClockRequest(
-      latitude: map['latitude'] != null ? map['latitude'] as double : null,
-      longitude: map['longitude'] != null ? map['longitude'] as double : null,
+      latitude:
+          map['latitude'] != null ? (map['latitude'] as num).toDouble() : null,
+      longitude: map['longitude'] != null
+          ? (map['longitude'] as num).toDouble()
+          : null,
       isFromSite: map['location_type'] != null
-          ? map['location_type'] as String == LocationType.site.name
+          ? map['location_type'] == LocationType.site.name
           : false,
       clockIn: map['clock_in'] != null
           ? ClockRequest()
@@ -52,10 +58,14 @@ class ClockRequest {
           : null,
       clockOut: map['clock_out'] != null
           ? ClockRequest()
-              ._convertUTCToEgyptLocalTime(map['clock_in'] as String)
+              ._convertUTCToEgyptLocalTime(map['clock_out'] as String)
+          : null, // Fixed reference to clock_out
+      locationId: map['location_id'] != null
+          ? (map['location_id'] as num).toInt()
           : null,
     );
   }
+
   String toJson() => json.encode(toMap());
   factory ClockRequest.fromJson(String source) =>
       ClockRequest.fromMap(json.decode(source) as Map<String, dynamic>);
