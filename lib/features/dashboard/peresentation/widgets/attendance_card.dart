@@ -5,16 +5,10 @@ import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_history/clock_history.dart';
 
-class AttendanceCard extends StatefulWidget {
+class AttendanceCard extends StatelessWidget {
   final ClockHistory clockHistory;
   const AttendanceCard({super.key, required this.clockHistory});
 
-  @override
-  State<AttendanceCard> createState() => _AttendanceCardState();
-}
-
-class _AttendanceCardState extends State<AttendanceCard> {
-  bool _isExpanded = false;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -30,32 +24,18 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 children: [
                   _buildDate(),
                   10.toSizedBox,
-                  if (widget.clockHistory.day != null)
-                    (widget.clockHistory.day!).toSubTitle(
+                  if (clockHistory.day != null)
+                    (clockHistory.day!).toSubTitle(
                       fontWeight: FontWeight.w400,
                       fontSize: 14.sp,
                       color: AppColors.black,
                     ),
                 ],
               ),
-              widget.clockHistory.otherClocks.isEmpty || !_isExpanded
-                  ? _buildChecksRow(
-                      clockIn: widget.clockHistory.clockIn,
-                      clockOut: widget.clockHistory.clockOut,
-                      totalHours: widget.clockHistory.totalHours)
-                  : SizedBox(
-                      height: 150,
-                      child: ListView.separated(
-                          itemBuilder: (context, index) => _buildChecksRow(
-                              clockIn: widget
-                                  .clockHistory.otherClocks[index].clockIn,
-                              clockOut: widget
-                                  .clockHistory.otherClocks[index].clockOut,
-                              totalHours: widget
-                                  .clockHistory.otherClocks[index].totalHours),
-                          separatorBuilder: (_, index) => 10.toSizedBox,
-                          itemCount: widget.clockHistory.otherClocks.length),
-                    ),
+              _buildChecksRow(
+                  clockIn: clockHistory.clockIn,
+                  clockOut: clockHistory.clockOut,
+                  totalHours: clockHistory.totalHours)
             ],
           ),
         ),
@@ -69,17 +49,17 @@ class _AttendanceCardState extends State<AttendanceCard> {
       required String? totalHours}) {
     return Row(
       children: [
-        if (widget.clockHistory.clockIn != null)
+        if (clockHistory.clockIn != null)
           Expanded(
-            child: checkCol('Check in', widget.clockHistory.clockIn!),
+            child: checkCol('Check in', clockHistory.clockIn!),
           ),
-        if (widget.clockHistory.clockOut != null)
+        if (clockHistory.clockOut != null)
           Expanded(
-            child: checkCol('Checkout', widget.clockHistory.clockOut!),
+            child: checkCol('Checkout', clockHistory.clockOut!),
           ),
-        if (widget.clockHistory.totalHours != null)
+        if (clockHistory.totalHours != null)
           Expanded(
-            child: checkCol('Work hours', widget.clockHistory.totalHours!),
+            child: checkCol('Work hours', clockHistory.totalHours!),
           ),
       ],
     );
@@ -87,25 +67,12 @@ class _AttendanceCardState extends State<AttendanceCard> {
 
   Row _buildDate() {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      widget.clockHistory.date != null
-          ? (widget.clockHistory.date!).toSubTitle(
+      clockHistory.date != null
+          ? (clockHistory.date!).toSubTitle(
               fontWeight: FontWeight.w600,
               fontSize: 16.sp,
               color: AppColors.black,
             )
-          : const SizedBox(),
-      widget.clockHistory.otherClocks.isNotEmpty
-          ? IconButton(
-              onPressed: () {
-                setState(() {
-                  _isExpanded = !_isExpanded;
-                });
-              },
-              icon: _isExpanded
-                  ? const Icon(Icons.expand_less_outlined,
-                      color: AppColors.mainColor)
-                  : const Icon(Icons.expand_more_outlined,
-                      color: AppColors.mainColor))
           : const SizedBox(),
     ]);
   }
@@ -113,7 +80,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
   Widget _buildIndicator() {
     return Container(
       width: 8,
-      height: _isExpanded ? 150 : 100,
+      height: 100,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         color: AppColors.mainColor,
