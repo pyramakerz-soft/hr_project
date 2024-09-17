@@ -111,8 +111,11 @@ class ClockHistory {
     if (timeStr == null) return '-';
     try {
       final DateTime utcDateTime = DateFormat('hh:mma').parseUtc(timeStr);
-      final tz.TZDateTime egyptDateTime =
+      tz.TZDateTime egyptDateTime =
           tz.TZDateTime.from(utcDateTime, tz.getLocation('Africa/Cairo'));
+      if (egyptDateTime.timeZoneOffset.inHours == 2) {
+        egyptDateTime = egyptDateTime.add(const Duration(hours: 1));
+      }
       final DateFormat outputFormat = DateFormat('hh:mm a');
       return outputFormat.format(egyptDateTime);
     } catch (e) {
