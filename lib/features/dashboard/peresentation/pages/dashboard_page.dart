@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:pyramakerz_atendnace/core/attendance/presentation/attendance_page.dart';
 import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
@@ -169,8 +168,6 @@ class _HomeBody extends StatelessWidget {
                               context, 'Check Out Cached due to network issue');
                         }
                       },
-                      clockInTime:
-                          _parseTimeStringToDateTime(user.clockIn ?? ''),
                     ),
                     20.toSizedBox,
                     _buildAttendanceTitle(context: context),
@@ -253,16 +250,6 @@ class _HomeBody extends StatelessWidget {
             : const SizedBox(),
       ),
     );
-  }
-
-  DateTime _parseTimeStringToDateTime(String timeString) {
-    DateFormat timeFormat = DateFormat("HH:mm:ss");
-    try {
-      DateTime dateTime = timeFormat.parse(timeString);
-      return dateTime;
-    } catch (e) {
-      return DateTime.now();
-    }
   }
 
   Widget _buildAttendanceTitle({required BuildContext context}) {
