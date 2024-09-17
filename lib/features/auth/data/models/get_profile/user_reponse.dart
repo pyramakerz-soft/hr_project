@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/location.dart';
 
+import 'package:timezone/timezone.dart' as tz;
+import 'package:intl/intl.dart';
+
 class User {
   final int? id;
   final String? name;
@@ -28,8 +31,22 @@ class User {
     this.locations = const [],
   });
 
-  // Factory method to create a User from JSON
-  // Factory method to create a User from JSON
+  String _convertTimeToEgyptLocalTime(String? timeStr) {
+    if (timeStr == null) return '-';
+    try {
+      final DateTime utcDateTime = DateFormat('HH:mm:ss').parseUtc(timeStr);
+      tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(utcDateTime, tz.getLocation('Africa/Cairo'));
+      if (egyptDateTime.timeZoneOffset.inHours == 2) {
+        egyptDateTime = egyptDateTime.add(const Duration(hours: 1));
+      }
+      final DateFormat outputFormat = DateFormat('hh:mm a');
+      return outputFormat.format(egyptDateTime);
+    } catch (e) {
+      return 'Invalid Time Format';
+    }
+  }
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] as int?,
@@ -39,7 +56,9 @@ class User {
       jobTitle: json['job_title'] as String?,
       roleName: json['role_name'] as String?,
       isClockedOut: json['is_clocked_out'] == true ? true : false,
-      clockIn: json['clockIn'] as String?,
+      clockIn: json['clockIn'] != null
+          ? User()._convertTimeToEgyptLocalTime(json['clockIn'] as String?)
+          : null,
       isWorkFromHome: json['work_home'] == true ? true : false,
       totalHours: json['total_hours'] as String?,
       locations: json['assignedLocationsUser'] != null
