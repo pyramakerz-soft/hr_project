@@ -102,8 +102,6 @@ class _DashboardPageState extends State<DashboardPage> {
             loadingLoginWithToken: (val) => const Scaffold(
                   body: LoadingIndicatorWidget(),
                 ),
-            // TO DO we need to make the home cubit is the one responsible for home data not the auth bloc
-
             getHomeDataSucceed: (val) => CustomRefreshIndicator(
                   onRefresh: () async {
                     authBloc.add(AuthEvent.getHomeData());
