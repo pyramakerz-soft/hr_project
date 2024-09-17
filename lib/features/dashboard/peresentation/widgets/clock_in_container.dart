@@ -1,19 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:pyramakerz_atendnace/core/extensions/screen_util_extension.dart';
 import 'package:pyramakerz_atendnace/core/extensions/string_extensions.dart';
 import 'package:pyramakerz_atendnace/core/theme/app_colors.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
-import 'package:pyramakerz_atendnace/features/auth/persentation/login/login_page.dart';
 import 'package:pyramakerz_atendnace/features/auth/persentation/login/widgets/big_btn.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/clock_dialog/clock_dialog_widget.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/peresentation/widgets/loading_indicater.dart';
-import 'package:pyramakerz_atendnace/features/home/presentation/cubit/home_cubit.dart';
 
 class ClockContainer extends StatefulWidget {
   const ClockContainer({
@@ -23,7 +20,6 @@ class ClockContainer extends StatefulWidget {
     required this.onFailure,
     this.isCheckedIn = true,
     this.duration,
-    this.clockInTime,
     required this.onClockOut,
   });
   final User user;
@@ -31,7 +27,6 @@ class ClockContainer extends StatefulWidget {
   final void Function() onFailure;
   final bool isCheckedIn;
   final String? duration;
-  final DateTime? clockInTime;
   final Future<void> Function() onClockOut;
 
   @override
@@ -110,13 +105,18 @@ class _ClockContainerState extends State<ClockContainer> {
   }
 
   Widget _buildClockInTime() {
-    return DateFormat('hh:mm a')
-        .format(widget.clockInTime ?? DateTime.now())
-        .toSubTitle(
-          fontWeight: FontWeight.w500,
-          fontSize: 13.sp,
-          color: AppColors.grey,
-        );
+    if (widget.user.clockIn == null) {
+      return DateFormat('hh:mm a').format(DateTime.now()).toSubTitle(
+            fontWeight: FontWeight.w500,
+            fontSize: 13.sp,
+            color: AppColors.grey,
+          );
+    }
+    return widget.user.clockIn!.toSubTitle(
+      fontWeight: FontWeight.w500,
+      fontSize: 13.sp,
+      color: AppColors.grey,
+    );
   }
 
   Widget _buildClockInTitle() {
@@ -192,6 +192,8 @@ class _ClockContainerState extends State<ClockContainer> {
           widget.user.jobTitle != null
               ? widget.user.jobTitle!.toSubTitle(
                   fontSize: 16.sp,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
                   color: Colors.black,
                   fontWeight: FontWeight.w600,
                 )
