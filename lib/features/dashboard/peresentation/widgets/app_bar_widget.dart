@@ -21,25 +21,30 @@ class AppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
       children: [
-        SvgPicture.asset(AssetManger.menu),
-        10.toSizedBoxHorizontal,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            'Hi, $firstName'.toSubTitle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-              color: Colors.black,
-            ),
-            'Good Morning'.toSubTitle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w700,
-              color: AppColors.darkGrey,
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FittedBox(
+                child: 'Hi, $firstName '.toSubTitle(
+                  fontSize: 16.sp,
+                  maxLines: 1,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
+              ),
+              'Good Morning'.toSubTitle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.darkGrey,
+              ),
+            ],
+          ),
         ),
-        const Spacer(),
+        20.toSizedBox,
         AnimatedFadeWidget(
             onTap: () {
               final apppref = getIt<AppPreferences>();
