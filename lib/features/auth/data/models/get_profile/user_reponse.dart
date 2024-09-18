@@ -12,6 +12,8 @@ class User {
   final String? jobTitle;
   final String? roleName;
   final String? totalHours;
+  final DateTime? startTime;
+  final DateTime? endTime;
   final bool? isClockedOut;
   final String? clockIn;
   final bool? isWorkFromHome;
@@ -28,8 +30,39 @@ class User {
     this.clockIn,
     this.isWorkFromHome,
     this.totalHours,
+    this.startTime,
+    this.endTime,
     this.locations = const [],
   });
+
+  DateTime? _parseTimeString(String? timeString) {
+    if (timeString == null) return null;
+
+    // Parsing the time string from HH:mm:ss format
+    final timeFormat = DateFormat("HH:mm:ss");
+    DateTime parsedTime = timeFormat.parse(timeString);
+
+    // Combine with today's date to form a complete DateTime object
+    DateTime now = DateTime.now();
+    DateTime completeDateTime = DateTime(now.year, now.month, now.day,
+        parsedTime.hour, parsedTime.minute, parsedTime.second);
+
+    return completeDateTime;
+  }
+
+  DateTime? _convertUTCToEgyptLocalTime(String? utcTimeStr) {
+    if (utcTimeStr == null) return null;
+
+    try {
+      final DateTime utcDateTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parseUtc(utcTimeStr);
+      final tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(utcDateTime, tz.getLocation('Africa/Cairo'));
+      return egyptDateTime;
+    } catch (e) {
+      return null;
+    }
+  }
 
   String _convertTimeToEgyptLocalTime(String? timeStr) {
     if (timeStr == null) return '-';
@@ -61,8 +94,14 @@ class User {
           : null,
       isWorkFromHome: json['work_home'] == true ? true : false,
       totalHours: json['total_hours'] as String?,
-      locations: json['assignedLocationsUser'] != null
-          ? List<Location>.from((json['assignedLocationsUser'] as List)
+      startTime: json['user_start_time'] != null
+          ? User()._parseTimeString(json['user_start_time'] as String?)
+          : null,
+      endTime: json['user_end_time'] != null
+          ? User()._parseTimeString(json['user_end_time'] as String?)
+          : null,
+      locations: json['assigned_locations_user'] != null
+          ? List<Location>.from((json['assigned_locations_user'] as List)
               .map((x) => Location.fromMap(x))).toList()
           : [],
     );
@@ -70,6 +109,8 @@ class User {
 
   // Method to convert User instance to JSON
   Map<String, dynamic> toJson() {
+    final timeFormat = DateFormat("HH:mm:ss");
+
     return {
       'id': id,
       'name': name,
@@ -81,7 +122,9 @@ class User {
       'clockIn': clockIn,
       'work_home': isWorkFromHome,
       'total_hours': totalHours,
-      'assignedLocationsUser': locations.map((x) => x.toMap()).toList(),
+      'user_start_time': endTime != null ? timeFormat.format(startTime!) : null,
+      'user_end_time': endTime != null ? timeFormat.format(endTime!) : null,
+      'assigned_locations_user': locations.map((x) => x.toMap()).toList(),
     };
   }
 
