@@ -9,6 +9,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:pyramakerz_atendnace/core/error/failure.dart';
 import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
+import 'package:pyramakerz_atendnace/core/services/notifications_service.dart';
 import 'package:pyramakerz_atendnace/core/usecase/base_usecase.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/auth/domain/usecases/get_profile_usecase.dart';
@@ -25,17 +26,20 @@ class HomeCubit extends Cubit<HomeState> {
   final LocationService _locationService;
   final CacheService _cacheService;
   final GetProfileUsecase _getProfileUsecase;
+  final NotificationsService _notificationsService;
   StreamSubscription<InternetStatus>? _internetStatusSubscription;
 
   HomeCubit(
       {required HomeRepository repository,
       required LocationService locationService,
       required CacheService cacheService,
-      required GetProfileUsecase getProfileUsecase})
+      required GetProfileUsecase getProfileUsecase,
+      required NotificationsService notificationsService})
       : _repository = repository,
         _locationService = locationService,
         _cacheService = cacheService,
         _getProfileUsecase = getProfileUsecase,
+        _notificationsService = notificationsService,
         super(const HomeState(status: HomeStateStatus.initial));
 
   Future<void> init({required User user}) async {
@@ -47,11 +51,12 @@ class HomeCubit extends Cubit<HomeState> {
             : CheckInStateStatus.checkedOut,
       ),
     );
-    await askForPermission();
+    await askForLocationPermission();
+    await _askForNotificationsPermission();
     _listenToInternetConnectivity();
   }
 
-  Future<void> askForPermission() async {
+  Future<void> askForLocationPermission() async {
     final isGranted = await _locationService.askForPermissionIfNeeded();
     if (isGranted) {
       emit(state.copyWith(
@@ -62,6 +67,16 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(
           isLocationPermissionGranted: false,
           message: 'Permission not granted!'));
+    }
+  }
+
+  Future<void> _askForNotificationsPermission() async {
+    try {
+      final isPermissionGranted =
+          await _notificationsService.requestPermissionIfNeeded();
+      if (!isPermissionGranted) return;
+    } catch (e) {
+      log(e.toString());
     }
   }
 
