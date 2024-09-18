@@ -37,7 +37,8 @@ class ClockInDialog extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocProvider(
-          create: (context) => getIt<ClockInCubit>()..getCurrentLocation(),
+          create: (context) =>
+              getIt<ClockInCubit>()..getCurrentLocation(user: user),
           child: BlocConsumer<ClockInCubit, ClockInState>(
             listener: (context, state) {
               if (state.isError) {
