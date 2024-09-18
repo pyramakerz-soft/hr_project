@@ -26,8 +26,7 @@ class ClockInState {
   final Clock? workingData;
   final String? message;
   final bool isLocationSitesEnabled;
-  final int? selectedSite;
-  final User? user;
+  final Location? selectedSite;
   const ClockInState({
     this.status = ClockInStateStatus.gettingAddress,
     this.formattedAddress,
@@ -37,7 +36,6 @@ class ClockInState {
     this.message,
     this.selectedSite,
     this.isLocationSitesEnabled = false,
-    this.user,
   });
 
   ClockInState copyWith({
@@ -48,8 +46,7 @@ class ClockInState {
     LocationType? locationType,
     String? message,
     bool? isLocationSitesEnabled,
-    int? selectedSite,
-    User? user,
+    Location? selectedSite,
   }) {
     return ClockInState(
       workingData: workingData ?? this.workingData,
@@ -61,7 +58,6 @@ class ClockInState {
       isLocationSitesEnabled:
           isLocationSitesEnabled ?? this.isLocationSitesEnabled,
       selectedSite: selectedSite ?? this.selectedSite,
-      user: user ?? this.user,
     );
   }
 
@@ -76,8 +72,7 @@ class ClockInState {
         other.currentLocation == currentLocation &&
         other.message == message &&
         other.isLocationSitesEnabled == isLocationSitesEnabled &&
-        other.selectedSite == selectedSite &&
-        other.user == user;
+        other.selectedSite == selectedSite;
   }
 
   @override
@@ -89,6 +84,5 @@ class ClockInState {
       message.hashCode ^
       currentLocation.hashCode ^
       isLocationSitesEnabled.hashCode ^
-      selectedSite.hashCode ^
-      user.hashCode;
+      selectedSite.hashCode;
 }

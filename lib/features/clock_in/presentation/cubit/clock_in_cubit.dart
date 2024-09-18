@@ -7,6 +7,7 @@ import 'package:pyramakerz_atendnace/core/error/failure.dart';
 import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
 import 'package:pyramakerz_atendnace/core/services/notifications_service.dart';
+import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/location.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
@@ -36,7 +37,7 @@ class ClockInCubit extends Cubit<ClockInState> {
       longitude: state.currentLocation?.longitude ?? 0.0,
       latitude: state.currentLocation?.latitude ?? 0.0,
       isFromSite: isFromSite,
-      locationId: state.selectedSite,
+      locationId: state.selectedSite?.locationId,
       clockIn: DateTime.now(),
     );
 
@@ -72,7 +73,7 @@ class ClockInCubit extends Cubit<ClockInState> {
     }
   }
 
-  void onSiteSelected(int? siteId) {
+  void onSiteSelected(Location? siteId) {
     emit(
       state.copyWith(selectedSite: siteId),
     );
@@ -90,17 +91,17 @@ class ClockInCubit extends Cubit<ClockInState> {
 
   Future<void> _scheduleNotification() async {
     try {
-      final userEndTime = state.user?.endTime;
-      if (userEndTime == null) return;
-      await _notificationsService.scheduleNotification(
-          dateTime: DateTime.now().add(Duration(seconds: 5)));
+      final locationEndTime = state.selectedSite?.locationEndTime;
+      if (locationEndTime == null) return;
+      final time = locationEndTime.add(const Duration(minutes: 30));
+      await _notificationsService.scheduleNotification(dateTime: time);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  Future<void> getCurrentLocation({required User user}) async {
-    emit(state.copyWith(status: ClockInStateStatus.gettingAddress, user: user));
+  Future<void> getCurrentLocation() async {
+    emit(state.copyWith(status: ClockInStateStatus.gettingAddress));
     try {
       await _locationService.askForPermissionIfNeeded();
       final position = await _locationService.getCurrentLocation();

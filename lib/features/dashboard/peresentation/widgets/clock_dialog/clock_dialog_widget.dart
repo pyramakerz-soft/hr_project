@@ -37,8 +37,7 @@ class ClockInDialog extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocProvider(
-          create: (context) =>
-              getIt<ClockInCubit>()..getCurrentLocation(user: user),
+          create: (context) => getIt<ClockInCubit>()..getCurrentLocation(),
           child: BlocConsumer<ClockInCubit, ClockInState>(
             listener: (context, state) {
               if (state.isError) {
@@ -105,8 +104,7 @@ class ClockInDialog extends StatelessWidget {
                       title: 'Select site',
                       itemLabel: (e) => e.locationName ?? '',
                       items: user.locations,
-                      onChanged: (item) =>
-                          clockInCubit.onSiteSelected(item?.locationId),
+                      onChanged: clockInCubit.onSiteSelected,
                       isEnabled: state.isLocationSitesEnabled ||
                           user.isWorkFromHome == false,
                     ),
