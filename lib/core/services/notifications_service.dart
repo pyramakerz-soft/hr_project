@@ -18,7 +18,6 @@ abstract class NotificationsService {
 class NotificationsServiceImpl implements NotificationsService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-
   NotificationsServiceImpl() {
     _initializeNotifications();
   }
@@ -119,20 +118,6 @@ class NotificationsServiceImpl implements NotificationsService {
       channelDescription: 'Schedule notification for clock out',
       importance: Importance.max,
       priority: Priority.high,
-      // actions: <AndroidNotificationAction>[
-      //   AndroidNotificationAction(
-      //     'accept_action',
-      //     'Stay Clocked in',
-      //     contextual: true,
-      //     showsUserInterface: true,
-      //   ),
-      //   AndroidNotificationAction(
-      //     'decline_action',
-      //     'Clock out now',
-      //     contextual: true,
-      //     showsUserInterface: true,
-      //   ),
-      // ],
     );
 
     const NotificationDetails platformChannelSpecifics =
@@ -175,12 +160,9 @@ class NotificationsServiceImpl implements NotificationsService {
   }
 
   void _handleNotificationAction(String? payload) {
-    // Handle what happens when the notification is tapped
     if (payload == 'accept_action') {
-      // Handle positive action, like Accept
       log('Accepted');
     } else if (payload == 'decline_action') {
-      // Handle negative action, like Decline
       log('Declined');
     }
   }
