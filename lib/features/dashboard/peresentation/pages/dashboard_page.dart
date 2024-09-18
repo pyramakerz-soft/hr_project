@@ -231,7 +231,7 @@ class _HomeBody extends StatelessWidget {
       emptyScreenTypes: EmptyScreenTypes.noLocationAccess,
       actionWidget: MainBtn(
         fun: () async {
-          await homeCubit.askForPermission();
+          await homeCubit.askForLocationPermission();
         },
         txt: 'Allow Access',
         color: AppColors.mainColor,
