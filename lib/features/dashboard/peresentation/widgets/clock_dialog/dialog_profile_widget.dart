@@ -24,19 +24,21 @@ class ProfileSection extends StatelessWidget {
             child: Icon(Icons.person, size: 40, color: Colors.white),
           ),
           SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(user.name ?? '',
-                  style:
-                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
-              5.toSizedBox,
-              Text(user.jobTitle ?? '',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                      color: AppColors.darkGrey)),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.name ?? '',
+                    style: TextStyle(
+                        fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                5.toSizedBox,
+                Text(user.jobTitle ?? '',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14.sp,
+                        color: AppColors.darkGrey)),
+              ],
+            ),
           ),
         ],
       ),
