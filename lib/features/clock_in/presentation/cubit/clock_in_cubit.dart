@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -5,6 +6,8 @@ import 'package:injectable/injectable.dart';
 import 'package:pyramakerz_atendnace/core/error/failure.dart';
 import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
+import 'package:pyramakerz_atendnace/core/services/notifications_service.dart';
+import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/home/data/repository/home_repository.dart';
@@ -15,13 +18,16 @@ class ClockInCubit extends Cubit<ClockInState> {
   final HomeRepository _repository;
   final LocationService _locationService;
   final CacheService _cacheService;
-  ClockInCubit(
-      {required HomeRepository repository,
-      required LocationService locationService,
-      required CacheService cacheService})
-      : _repository = repository,
+  final NotificationsService _notificationsService;
+  ClockInCubit({
+    required HomeRepository repository,
+    required LocationService locationService,
+    required CacheService cacheService,
+    required NotificationsService notificationsService,
+  })  : _repository = repository,
         _locationService = locationService,
         _cacheService = cacheService,
+        _notificationsService = notificationsService,
         super(const ClockInState(status: ClockInStateStatus.initial));
 
   Future<void> checkIn() async {
@@ -36,7 +42,7 @@ class ClockInCubit extends Cubit<ClockInState> {
 
     try {
       final response = await _repository.checkIn(request: clockRequest);
-
+      await _scheduleNotification();
       emit(state.copyWith(
           status: ClockInStateStatus.checkIn,
           workingData: response,
@@ -82,8 +88,19 @@ class ClockInCubit extends Cubit<ClockInState> {
     );
   }
 
-  Future<void> getCurrentLocation() async {
-    emit(state.copyWith(status: ClockInStateStatus.gettingAddress));
+  Future<void> _scheduleNotification() async {
+    try {
+      final userEndTime = state.user?.endTime;
+      if (userEndTime == null) return;
+      await _notificationsService.scheduleNotification(
+          dateTime: DateTime.now().add(Duration(seconds: 5)));
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<void> getCurrentLocation({required User user}) async {
+    emit(state.copyWith(status: ClockInStateStatus.gettingAddress, user: user));
     try {
       await _locationService.askForPermissionIfNeeded();
       final position = await _locationService.getCurrentLocation();
