@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pyramakerz_atendnace/features/auth/persentation/login/login_page.dart';
 import 'package:pyramakerz_atendnace/core/app-router/app_router.dart';
 import 'package:pyramakerz_atendnace/core/asset_manger/app_string.dart';
 import 'package:pyramakerz_atendnace/core/di/dependency_config.dart';
@@ -11,7 +10,9 @@ import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await configureDependencies();
+
   initializeTimeZones();
   runApp(const MyApp());
 }
