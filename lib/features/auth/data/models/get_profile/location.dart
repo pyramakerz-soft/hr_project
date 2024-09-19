@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
+import 'dart:developer';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/intl.dart';
 
 class Location {
@@ -14,6 +15,29 @@ class Location {
     this.locationEndTime,
     this.locationStartTime,
   });
+  DateTime? _parseTimeString(String timeStr) {
+    try {
+      // Parse the input time string (HH:mm:ss) as UTC
+      final DateTime utcDateTime = DateFormat('HH:mm:ss').parseUtc(timeStr);
+
+      // Convert UTC time to Cairo time
+      tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(utcDateTime, tz.getLocation('Africa/Cairo'));
+
+      // Return as DateTime object in HH:mm:ss format
+      return DateTime(
+        egyptDateTime.year,
+        egyptDateTime.month,
+        egyptDateTime.day,
+        egyptDateTime.hour,
+        egyptDateTime.minute,
+        egyptDateTime.second,
+      );
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
 
   Map<String, dynamic> toMap() {
     final timeFormat = DateFormat("HH:mm:ss");
@@ -41,18 +65,7 @@ class Location {
           : null,
     );
   }
-
   String toJson() => json.encode(toMap());
-
   factory Location.fromJson(String source) =>
       Location.fromMap(json.decode(source) as Map<String, dynamic>);
-  DateTime? _parseTimeString(String? timeString) {
-    if (timeString == null) return null;
-    final timeFormat = DateFormat("HH:mm:ss");
-    DateTime parsedTime = timeFormat.parse(timeString);
-    DateTime now = DateTime.now();
-    DateTime completeDateTime = DateTime(now.year, now.month, now.day,
-        parsedTime.hour, parsedTime.minute, parsedTime.second);
-    return completeDateTime;
-  }
 }
