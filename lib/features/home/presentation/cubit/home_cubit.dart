@@ -72,11 +72,22 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _askForNotificationsPermission() async {
     try {
-      final isPermissionGranted =
+      // Request notification permission and get the result
+      final bool isPermissionGranted =
           await _notificationsService.requestPermissionIfNeeded();
-      if (!isPermissionGranted) return;
-    } catch (e) {
-      log(e.toString());
+
+      // If the permission is not granted, log and return
+      if (!isPermissionGranted) {
+        log('Notification permission not granted.');
+        return;
+      }
+
+      // Proceed with additional logic if permission is granted
+      log('Notification permission granted.');
+    } catch (e, stackTrace) {
+      // Log any potential errors with stack trace for better debugging
+      log('Error requesting notification permission: $e');
+      log('StackTrace: $stackTrace');
     }
   }
 
@@ -193,6 +204,8 @@ class HomeCubit extends Cubit<HomeState> {
     } on Failure catch (e) {
       if (e.message.contains('connection') || e is SocketException) {
         _cacheRequest(request: request!);
+        emit(state.copyWith(message: 'Check Out Cached due to network issue'));
+        return false;
       }
       emit(state.copyWith(message: e.message));
       return false;
