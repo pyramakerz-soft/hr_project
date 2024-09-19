@@ -10,7 +10,7 @@ abstract class NotificationsService {
   Future<void> scheduleNotification({required DateTime dateTime});
   Future<bool> requestPermissionIfNeeded();
   Future<void> cancelNotification();
-  Future<void> cancelAllNotifiations();
+  Future<void> cancelAllNotifications();
 }
 
 @injectable.Order(-3)
@@ -53,31 +53,20 @@ class NotificationsServiceImpl implements NotificationsService {
 
   @override
   Future<bool> requestPermissionIfNeeded() async {
-    final iOSPlugin =
-        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>();
-
-    if (iOSPlugin != null) {
-      final isIOSGranted = await iOSPlugin.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-
-      if (isIOSGranted == true) return true;
-
-      return false;
-    }
-
+    // Check if notification permission is denied
     if (await Permission.notification.isDenied) {
-      final androidPermissionStatus = await Permission.notification.request();
-      if (androidPermissionStatus.isGranted) return true;
-      return false;
+      // Request notification permission
+      final status = await Permission.notification.request();
+      // Return true if permission is granted
+      return status.isGranted;
     }
 
+    // If permission was already granted
     if (await Permission.notification.isGranted) {
       return true;
     }
+
+    // If the permission is denied or restricted, return false
     return false;
   }
 
@@ -123,22 +112,28 @@ class NotificationsServiceImpl implements NotificationsService {
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    // Schedule the notification at the specified time
+    // Get the scheduled time in the local timezone
     final tz.TZDateTime scheduledTime = tz.TZDateTime.from(dateTime, tz.local);
 
-    // Check if the scheduled time is in the past
-    if (scheduledTime.isBefore(tz.TZDateTime.now(tz.local))) {
+    // Calculate the difference between the scheduled time and the current time
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    if (scheduledTime.isBefore(now)) {
       log('Scheduled time is in the past: $scheduledTime');
       return;
     }
 
+    // Calculate the duration between now and the scheduled time
+    final Duration durationDifference = scheduledTime.difference(now);
+
+    // Schedule the notification based on the time difference
     int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     try {
       await _flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId,
         'Time to Clock Out!',
         'You have exceeded your full working hours. Do not forget to clock out if you are done for the day.',
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        now.add(
+            durationDifference), // Schedule the notification using the time difference
         platformChannelSpecifics,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
@@ -155,7 +150,7 @@ class NotificationsServiceImpl implements NotificationsService {
   }
 
   @override
-  Future<void> cancelAllNotifiations() async {
+  Future<void> cancelAllNotifications() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
   }
 
