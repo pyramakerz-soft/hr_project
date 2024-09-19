@@ -10,7 +10,7 @@ abstract class NotificationsService {
   Future<void> scheduleNotification({required DateTime dateTime});
   Future<bool> requestPermissionIfNeeded();
   Future<void> cancelNotification();
-  Future<void> cancelAllNotifications();
+  Future<void> cancelAllNotifiations();
 }
 
 @injectable.Order(-3)
@@ -96,6 +96,9 @@ class NotificationsServiceImpl implements NotificationsService {
       return;
     }
 
+    // Initialize time zones if not already done globally
+    tz.initializeTimeZones();
+
     // Create notification channel if needed
     await _createNotificationChannel();
 
@@ -112,28 +115,40 @@ class NotificationsServiceImpl implements NotificationsService {
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    // Get the scheduled time in the local timezone
-    final tz.TZDateTime scheduledTime = tz.TZDateTime.from(dateTime, tz.local);
+    // Get current date in Cairo timezone
+    final tz.TZDateTime localNow =
+        tz.TZDateTime.now(tz.getLocation("Africa/Cairo"));
 
-    // Calculate the difference between the scheduled time and the current time
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    if (scheduledTime.isBefore(now)) {
-      log('Scheduled time is in the past: $scheduledTime');
+    // Combine the time from the passed dateTime with the current date
+    final tz.TZDateTime scheduledTime = tz.TZDateTime(
+      tz.getLocation("Africa/Cairo"),
+      localNow.year,
+      localNow.month,
+      localNow.day,
+      dateTime.hour,
+      dateTime.minute,
+      dateTime.second,
+    );
+
+    // Log the current local and scheduled times
+    log('System time (UTC): ${DateTime.now()}'); // Log system time (UTC)
+    log('Current local time in Cairo: $localNow'); // Log Cairo timezone time
+    log('Scheduled time in Cairo timezone: $scheduledTime'); // Log scheduled time
+
+    // Check if the scheduled time is in the past
+    if (scheduledTime.isBefore(localNow)) {
+      log('Scheduled time $scheduledTime is in the past.');
       return;
     }
 
-    // Calculate the duration between now and the scheduled time
-    final Duration durationDifference = scheduledTime.difference(now);
-
-    // Schedule the notification based on the time difference
+    // If the scheduled time is valid (in the future), schedule the notification
     int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     try {
       await _flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId,
         'Time to Clock Out!',
         'You have exceeded your full working hours. Do not forget to clock out if you are done for the day.',
-        now.add(
-            durationDifference), // Schedule the notification using the time difference
+        scheduledTime, // Schedule notification using the correctly parsed time
         platformChannelSpecifics,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
@@ -150,7 +165,7 @@ class NotificationsServiceImpl implements NotificationsService {
   }
 
   @override
-  Future<void> cancelAllNotifications() async {
+  Future<void> cancelAllNotifiations() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
   }
 
