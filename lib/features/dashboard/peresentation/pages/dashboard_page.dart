@@ -162,8 +162,7 @@ class _HomeBody extends StatelessWidget {
                         final success =
                             await homeCubit.checkOut(time: DateTime.now());
                         if (!success && context.mounted) {
-                          MySnackbar.showError(
-                              context, 'Check Out Cached due to network issue');
+                          MySnackbar.showError(context, state.message!);
                         }
                       },
                     ),
