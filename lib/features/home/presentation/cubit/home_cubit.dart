@@ -52,7 +52,7 @@ class HomeCubit extends Cubit<HomeState> {
       ),
     );
     await askForLocationPermission();
-    await _askForNotificationsPermission();
+    await askForNotificationsPermission();
     _listenToInternetConnectivity();
   }
 
@@ -70,7 +70,7 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> _askForNotificationsPermission() async {
+  Future<void> askForNotificationsPermission() async {
     try {
       // Request notification permission and get the result
       final bool isPermissionGranted =

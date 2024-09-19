@@ -56,9 +56,17 @@ class NotificationsServiceImpl implements NotificationsService {
     // Check if notification permission is denied
     if (await Permission.notification.isDenied) {
       // Request notification permission
-      final status = await Permission.notification.request();
+      final notificationPermission = await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()!
+          .requestNotificationsPermission();
+      final exactAlarmPermission = await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()!
+          .requestExactAlarmsPermission();
+
       // Return true if permission is granted
-      return status.isGranted;
+      return notificationPermission == true && exactAlarmPermission == true;
     }
 
     // If permission was already granted

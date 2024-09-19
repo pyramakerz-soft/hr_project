@@ -8,5 +8,9 @@ class MyBlockProviders {
         BlocProvider(
           create: (context) => getIt<AuthBloc>(),
         ),
+        BlocProvider(
+          create: (context) =>
+              getIt<HomeCubit>()..askForNotificationsPermission(),
+        ),
       ];
 }
