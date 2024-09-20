@@ -26,20 +26,18 @@ class HomeCubit extends Cubit<HomeState> {
   final LocationService _locationService;
   final CacheService _cacheService;
   final GetProfileUsecase _getProfileUsecase;
-  final NotificationsService _notificationsService;
+
   StreamSubscription<InternetStatus>? _internetStatusSubscription;
 
-  HomeCubit(
-      {required HomeRepository repository,
-      required LocationService locationService,
-      required CacheService cacheService,
-      required GetProfileUsecase getProfileUsecase,
-      required NotificationsService notificationsService})
-      : _repository = repository,
+  HomeCubit({
+    required HomeRepository repository,
+    required LocationService locationService,
+    required CacheService cacheService,
+    required GetProfileUsecase getProfileUsecase,
+  })  : _repository = repository,
         _locationService = locationService,
         _cacheService = cacheService,
         _getProfileUsecase = getProfileUsecase,
-        _notificationsService = notificationsService,
         super(const HomeState(status: HomeStateStatus.initial));
 
   Future<void> init({required User user}) async {
@@ -52,7 +50,6 @@ class HomeCubit extends Cubit<HomeState> {
       ),
     );
     await askForLocationPermission();
-    await askForNotificationsPermission();
     _listenToInternetConnectivity();
   }
 
@@ -67,27 +64,6 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(
           isLocationPermissionGranted: false,
           message: 'Permission not granted!'));
-    }
-  }
-
-  Future<void> askForNotificationsPermission() async {
-    try {
-      // Request notification permission and get the result
-      final bool isPermissionGranted =
-          await _notificationsService.requestPermissionIfNeeded();
-
-      // If the permission is not granted, log and return
-      if (!isPermissionGranted) {
-        log('Notification permission not granted.');
-        return;
-      }
-
-      // Proceed with additional logic if permission is granted
-      log('Notification permission granted.');
-    } catch (e, stackTrace) {
-      // Log any potential errors with stack trace for better debugging
-      log('Error requesting notification permission: $e');
-      log('StackTrace: $stackTrace');
     }
   }
 

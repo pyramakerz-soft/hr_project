@@ -8,7 +8,6 @@ import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
 import 'package:pyramakerz_atendnace/core/services/notifications_service.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/location.dart';
-import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/home/data/repository/home_repository.dart';
@@ -19,16 +18,14 @@ class ClockInCubit extends Cubit<ClockInState> {
   final HomeRepository _repository;
   final LocationService _locationService;
   final CacheService _cacheService;
-  final NotificationsService _notificationsService;
+
   ClockInCubit({
     required HomeRepository repository,
     required LocationService locationService,
     required CacheService cacheService,
-    required NotificationsService notificationsService,
   })  : _repository = repository,
         _locationService = locationService,
         _cacheService = cacheService,
-        _notificationsService = notificationsService,
         super(const ClockInState(status: ClockInStateStatus.initial));
 
   Future<void> checkIn() async {
@@ -93,8 +90,9 @@ class ClockInCubit extends Cubit<ClockInState> {
     try {
       final locationEndTime = state.selectedSite?.locationEndTime;
       if (locationEndTime == null) return;
-      final time = locationEndTime.add(const Duration(hours: 1));
-      await _notificationsService.scheduleNotification(dateTime: time);
+      // final time = locationEndTime.add(const Duration(hours: 1));
+      final time = DateTime.now().add(const Duration(seconds: 5));
+      NotificationsService.scheduleNotification(dateTime: time);
     } catch (e) {
       log(e.toString());
     }
