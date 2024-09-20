@@ -90,8 +90,8 @@ class ClockInCubit extends Cubit<ClockInState> {
     try {
       final locationEndTime = state.selectedSite?.locationEndTime;
       if (locationEndTime == null) return;
-      // final time = locationEndTime.add(const Duration(hours: 1));
-      final time = DateTime.now().add(const Duration(seconds: 5));
+      final time = locationEndTime.add(const Duration(hours: 1));
+      // final time = DateTime.now().add(const Duration(seconds: 5));
       NotificationsService.scheduleNotification(dateTime: time);
     } catch (e) {
       log(e.toString());

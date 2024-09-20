@@ -15,6 +15,7 @@ import 'package:pyramakerz_atendnace/core/app-preferances/app_preferances.dart'
 import 'package:pyramakerz_atendnace/core/di/register_module.dart' as _i778;
 import 'package:pyramakerz_atendnace/core/dio/api_helper.dart' as _i640;
 import 'package:pyramakerz_atendnace/core/network/network_info.dart' as _i615;
+import 'package:pyramakerz_atendnace/core/services/cache_service.dart' as _i989;
 import 'package:pyramakerz_atendnace/core/services/location_service.dart'
     as _i984;
 import 'package:pyramakerz_atendnace/features/auth/data/remote_data_source/remote_data_source.dart'
@@ -59,6 +60,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i963.AppPreferences>(() =>
         _i963.AppPreferences(sharedPreferences: gh<_i460.SharedPreferences>()));
     gh.singleton<_i615.NetworkInfo>(() => _i615.NetworkInfoImpl());
+    gh.singleton<_i989.CacheService>(() => _i989.CacheServiceImpl(
+        sharedPreferences: gh<_i460.SharedPreferences>()));
     gh.singleton<_i378.HomeRemoteSource>(
         () => _i378.HomeRemoteSourceImpl(apiHelper: gh<_i640.ApiHelper>()));
     gh.singleton<_i441.BaseAuthRemoteDataSource>(
@@ -67,25 +70,29 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i233.HomeRepository>(() =>
         _i233.HomeRepositoryImpl(remoteSource: gh<_i378.HomeRemoteSource>()));
     gh.singleton<_i283.BaseAuthReposetry>(() => _i320.AuthRepository(
-          gh<_i441.BaseAuthRemoteDataSource>(),
-          gh<_i615.NetworkInfo>(),
+          remoteDataSource: gh<_i441.BaseAuthRemoteDataSource>(),
+          networkInfo: gh<_i615.NetworkInfo>(),
+          cacheService: gh<_i989.CacheService>(),
         ));
-    gh.singleton<_i18.LoginUseCase>(
-        () => _i18.LoginUseCase(gh<_i283.BaseAuthReposetry>()));
     gh.singleton<_i615.GetProfileUsecase>(
         () => _i615.GetProfileUsecase(gh<_i283.BaseAuthReposetry>()));
+    gh.singleton<_i18.LoginUseCase>(
+        () => _i18.LoginUseCase(gh<_i283.BaseAuthReposetry>()));
     gh.factory<_i883.HomeCubit>(() => _i883.HomeCubit(
           repository: gh<_i233.HomeRepository>(),
           locationService: gh<_i984.LocationService>(),
-        ));
-    gh.factory<_i1067.ClockInCubit>(() => _i1067.ClockInCubit(
-          repository: gh<_i233.HomeRepository>(),
-          locationService: gh<_i984.LocationService>(),
+          cacheService: gh<_i989.CacheService>(),
+          getProfileUsecase: gh<_i615.GetProfileUsecase>(),
         ));
     gh.factory<_i13.AuthBloc>(() => _i13.AuthBloc(
           gh<_i615.GetProfileUsecase>(),
           gh<_i963.AppPreferences>(),
           gh<_i18.LoginUseCase>(),
+        ));
+    gh.factory<_i1067.ClockInCubit>(() => _i1067.ClockInCubit(
+          repository: gh<_i233.HomeRepository>(),
+          locationService: gh<_i984.LocationService>(),
+          cacheService: gh<_i989.CacheService>(),
         ));
     return this;
   }
