@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/location.dart';
 
@@ -15,7 +17,10 @@ class User {
   final bool? isClockedOut;
   final String? clockIn;
   final bool? isWorkFromHome;
+  final bool isNotifyByLocation;
   final List<Location> locations;
+  final DateTime? userStartTime;
+  final DateTime? userEndTime;
 
   User({
     this.id,
@@ -28,8 +33,35 @@ class User {
     this.clockIn,
     this.isWorkFromHome,
     this.totalHours,
+    this.isNotifyByLocation = false,
     this.locations = const [],
+    this.userEndTime,
+    this.userStartTime,
   });
+
+  DateTime? _parseTimeString(String timeStr) {
+    try {
+      // Parse the input time string (HH:mm:ss) as UTC
+      final DateTime utcDateTime = DateFormat('HH:mm:ss').parseUtc(timeStr);
+
+      // Convert UTC time to Cairo time
+      tz.TZDateTime egyptDateTime =
+          tz.TZDateTime.from(utcDateTime, tz.getLocation('Africa/Cairo'));
+
+      // Return as DateTime object in HH:mm:ss format
+      return DateTime(
+        egyptDateTime.year,
+        egyptDateTime.month,
+        egyptDateTime.day,
+        egyptDateTime.hour,
+        egyptDateTime.minute,
+        egyptDateTime.second,
+      );
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
 
   String _convertTimeToEgyptLocalTime(String? timeStr) {
     if (timeStr == null) return '-';
@@ -56,6 +88,7 @@ class User {
       jobTitle: json['job_title'] as String?,
       roleName: json['role_name'] as String?,
       isClockedOut: json['is_clocked_out'] == true ? true : false,
+      isNotifyByLocation: json['is_notify_by_location'] == true ? true : false,
       clockIn: json['clockIn'] != null
           ? User()._convertTimeToEgyptLocalTime(json['clockIn'] as String?)
           : null,
@@ -65,11 +98,18 @@ class User {
           ? List<Location>.from((json['assigned_locations_user'] as List)
               .map((x) => Location.fromMap(x))).toList()
           : [],
+      userStartTime: json['user_start_time'] != null
+          ? User()._parseTimeString(json['user_start_time'] as String)
+          : null,
+      userEndTime: json['user_end_time'] != null
+          ? User()._parseTimeString(json['user_end_time'] as String)
+          : null,
     );
   }
 
   // Method to convert User instance to JSON
   Map<String, dynamic> toJson() {
+    final timeFormat = DateFormat("HH:mm:ss");
     return {
       'id': id,
       'name': name,
@@ -81,7 +121,12 @@ class User {
       'clockIn': clockIn,
       'work_home': isWorkFromHome,
       'total_hours': totalHours,
+      'is_notify_by_location': isNotifyByLocation,
       'assigned_locations_user': locations.map((x) => x.toMap()).toList(),
+      'user_start_time':
+          userStartTime != null ? timeFormat.format(userStartTime!) : null,
+      'user_end_time':
+          userEndTime != null ? timeFormat.format(userEndTime!) : null,
     };
   }
 
@@ -97,6 +142,9 @@ class User {
     bool? isWorkFromHome,
     String? totalHours,
     List<Location>? locations,
+    bool? isNotifyByLocation,
+    DateTime? userStartTime,
+    DateTime? userEndTime,
   }) {
     return User(
       id: id ?? this.id,
@@ -110,6 +158,9 @@ class User {
       isWorkFromHome: isWorkFromHome ?? this.isWorkFromHome,
       totalHours: totalHours ?? this.totalHours,
       locations: locations ?? this.locations,
+      isNotifyByLocation: isNotifyByLocation ?? this.isNotifyByLocation,
+      userStartTime: userStartTime ?? this.userStartTime,
+      userEndTime: userEndTime ?? this.userEndTime,
     );
   }
 
@@ -132,6 +183,9 @@ class User {
         other.clockIn == clockIn &&
         other.totalHours == totalHours &&
         other.isWorkFromHome == isWorkFromHome &&
+        other.isNotifyByLocation == isNotifyByLocation &&
+        other.userEndTime == userEndTime &&
+        other.userStartTime == userStartTime &&
         listEquals(other.locations, locations);
   }
 
@@ -147,6 +201,9 @@ class User {
         totalHours.hashCode ^
         clockIn.hashCode ^
         isWorkFromHome.hashCode ^
+        isNotifyByLocation.hashCode ^
+        userEndTime.hashCode ^
+        userStartTime.hashCode ^
         locations.hashCode;
   }
 }

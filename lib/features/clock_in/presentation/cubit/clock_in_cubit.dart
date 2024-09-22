@@ -8,6 +8,7 @@ import 'package:pyramakerz_atendnace/core/services/cache_service.dart';
 import 'package:pyramakerz_atendnace/core/services/location_service.dart';
 import 'package:pyramakerz_atendnace/core/services/notifications_service.dart';
 import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/location.dart';
+import 'package:pyramakerz_atendnace/features/auth/data/models/get_profile/user_reponse.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_request.dart';
 import 'package:pyramakerz_atendnace/features/dashboard/data/models/clock_models/clock_response.dart';
 import 'package:pyramakerz_atendnace/features/home/data/repository/home_repository.dart';
@@ -28,7 +29,7 @@ class ClockInCubit extends Cubit<ClockInState> {
         _cacheService = cacheService,
         super(const ClockInState(status: ClockInStateStatus.initial));
 
-  Future<void> checkIn() async {
+  Future<void> checkIn({required User user}) async {
     final isFromSite = state.locationType == LocationType.site;
     final clockRequest = ClockRequest(
       longitude: state.currentLocation?.longitude ?? 0.0,
@@ -40,7 +41,7 @@ class ClockInCubit extends Cubit<ClockInState> {
 
     try {
       final response = await _repository.checkIn(request: clockRequest);
-      await _scheduleNotification();
+      await _scheduleNotification(user: user);
       emit(state.copyWith(
           status: ClockInStateStatus.checkIn,
           workingData: response,
@@ -86,16 +87,26 @@ class ClockInCubit extends Cubit<ClockInState> {
     );
   }
 
-  Future<void> _scheduleNotification() async {
+  Future<void> _scheduleNotification({required User user}) async {
     try {
-      final locationEndTime = state.selectedSite?.locationEndTime;
-      if (locationEndTime == null) return;
-      final time = locationEndTime.add(const Duration(hours: 1));
+      final endTime = user.isNotifyByLocation
+          ? _getEndTimeFromLocation()
+          : _getEndTimeFromUser(user: user);
+      if (endTime == null) return;
+      final time = endTime.add(const Duration(hours: 1));
       // final time = DateTime.now().add(const Duration(seconds: 5));
       NotificationsService.scheduleNotification(dateTime: time);
     } catch (e) {
       log(e.toString());
     }
+  }
+
+  DateTime? _getEndTimeFromLocation() {
+    return state.selectedSite?.locationEndTime;
+  }
+
+  DateTime? _getEndTimeFromUser({required User user}) {
+    return user.userEndTime;
   }
 
   Future<void> getCurrentLocation() async {

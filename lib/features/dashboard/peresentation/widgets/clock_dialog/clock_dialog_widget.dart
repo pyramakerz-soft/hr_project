@@ -116,7 +116,7 @@ class ClockInDialog extends StatelessWidget {
                   16.toSizedBox,
                   _DialogButtons(
                     onPositiveAction: () async {
-                      await clockInCubit.checkIn();
+                      await clockInCubit.checkIn(user: user);
                     },
                     onNegativeAction: () {},
                   ),
