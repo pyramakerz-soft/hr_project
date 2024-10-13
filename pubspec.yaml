@@ -85,6 +85,12 @@ dependencies:
   workmanager:
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/hr_icon.png"
   flutter_test:
     sdk: flutter
 
