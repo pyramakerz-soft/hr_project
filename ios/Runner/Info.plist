@@ -47,6 +47,8 @@
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Need location to check you location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+    <string>Need location to check you location</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Need location to check you location</string>
 
