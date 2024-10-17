@@ -19,6 +19,17 @@ class MySnackbar {
     );
   }
 
+  static void showSnackBar(
+    BuildContext context,
+    String message,
+  ) {
+    _showSnackbar(
+      context,
+      message,
+      backgroundColor: Colors.orange,
+    );
+  }
+
   // Private method to show the snackbar with a specified background color
   static void _showSnackbar(BuildContext context, String message,
       {required Color backgroundColor}) {
@@ -29,7 +40,7 @@ class MySnackbar {
       ),
       backgroundColor: backgroundColor,
       behavior: SnackBarBehavior.floating,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 4),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
