@@ -50,7 +50,10 @@ class ClockInDialog extends StatelessWidget {
                 Navigator.of(context).pop();
               }
               if (state.isCached) {
-                MySnackbar.showError(context, state.message!);
+                MySnackbar.showSnackBar(
+                  context,
+                  state.message!,
+                );
                 onFailure();
                 Navigator.of(context).pop();
               }
