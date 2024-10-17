@@ -1,0 +1,37 @@
+name: Dart
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ "test_server" ]
+
+
+jobs:
+  build:
+    needs: call-check-connection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v3
+      - name: ♨️ java Checkout
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: 📱 flutter Checkout
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.2'
+
+      - name: </> run commands
+        run: flutter clean ; flutter pub get ; flutter pub run build_runner build --delete-conflicting-outputs
+      - name: 🚀 get the apk aab
+        run: flutter build apk ; flutter build appbundle
+      - name: 🔥 upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.FIREBASE_APP_ID}}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          groups: tester
+          file: build/app/outputs/flutter-apk/app-release.apk
