@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
@@ -26,6 +27,7 @@ class HomeCubit extends Cubit<HomeState> {
   final LocationService _locationService;
   final CacheService _cacheService;
   final GetProfileUsecase _getProfileUsecase;
+  final NotificationsService _notificationsService;
 
   StreamSubscription<InternetStatus>? _internetStatusSubscription;
 
@@ -34,10 +36,12 @@ class HomeCubit extends Cubit<HomeState> {
     required LocationService locationService,
     required CacheService cacheService,
     required GetProfileUsecase getProfileUsecase,
+    required NotificationsService notificationsService,
   })  : _repository = repository,
         _locationService = locationService,
         _cacheService = cacheService,
         _getProfileUsecase = getProfileUsecase,
+        _notificationsService = notificationsService,
         super(const HomeState(status: HomeStateStatus.initial));
 
   Future<void> init({required User user}) async {
@@ -172,6 +176,7 @@ class HomeCubit extends Cubit<HomeState> {
           );
     try {
       await _repository.checkOut(request: request!);
+      await NotificationsService.cancelAll();
       emit(state.copyWith(
         checkInStatus: CheckInStateStatus.checkedOut,
         cachedRequest: null,
