@@ -106,11 +106,7 @@ class _ClockContainerState extends State<ClockContainer> {
 
   Widget _buildClockInTime() {
     if (widget.user.clockIn == null) {
-      return DateFormat('hh:mm a').format(DateTime.now()).toSubTitle(
-            fontWeight: FontWeight.w500,
-            fontSize: 13.sp,
-            color: AppColors.grey,
-          );
+      return SizedBox();
     }
     return widget.user.clockIn!.toSubTitle(
       fontWeight: FontWeight.w500,
