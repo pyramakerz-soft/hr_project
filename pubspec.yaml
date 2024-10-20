@@ -43,7 +43,7 @@ dependencies:
 
   flutter_linkify: ^6.0.0
   auto_route: ^9.2.0
-#  auto_route_generator: ^9.0.0
+  auto_route_generator: ^9.0.0
   either_dart: ^0.3.0
   equatable: ^2.0.5
   cloud_firestore: ^4.3.1

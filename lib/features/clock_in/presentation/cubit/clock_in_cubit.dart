@@ -93,9 +93,15 @@ class ClockInCubit extends Cubit<ClockInState> {
           ? _getEndTimeFromLocation()
           : _getEndTimeFromUser(user: user);
       if (endTime == null) return;
-      final time = endTime.add(const Duration(hours: 1));
+      final afterTime = endTime.add(const Duration(hours: 1, minutes: 3));
+      final beforeTime = endTime.add(const Duration(minutes: 57));
       // final time = DateTime.now().add(const Duration(seconds: 5));
-      NotificationsService.scheduleNotification(dateTime: time);
+
+      NotificationsService.scheduleNotification(
+          dateTime: beforeTime,
+          title: "Clock out reminder",
+          body: "Don't forget to clock out");
+      NotificationsService.scheduleNotification(dateTime: afterTime);
     } catch (e) {
       log(e.toString());
     }

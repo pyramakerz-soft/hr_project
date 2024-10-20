@@ -34,7 +34,8 @@ class NotificationsService {
     );
   }
 
-  static void scheduleNotification({required DateTime dateTime}) {
+  static void scheduleNotification(
+      {required DateTime dateTime, String? title, String? body}) {
     tz.initializeTimeZones();
     final tz.TZDateTime localNow =
         tz.TZDateTime.now(tz.getLocation("Africa/Cairo"));
@@ -58,9 +59,10 @@ class NotificationsService {
     }
 
     _flutterLocalNotificationsPlugin.zonedSchedule(
-      2,
-      'Time to Clock Out!',
-      'You have exceeded your full working hours. Do not forget to clock out if you are done for the day.',
+      2 + dateTime.minute,
+      title ?? 'Time to Clock Out!',
+      body ??
+          'You have exceeded your full working hours. Do not forget to clock out if you are done for the day.',
       scheduledTime, // Schedule notification using the correctly parsed time
       const NotificationDetails(
           android: AndroidNotificationDetails(
