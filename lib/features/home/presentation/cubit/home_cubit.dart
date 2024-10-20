@@ -27,7 +27,6 @@ class HomeCubit extends Cubit<HomeState> {
   final LocationService _locationService;
   final CacheService _cacheService;
   final GetProfileUsecase _getProfileUsecase;
-  final NotificationsService _notificationsService;
 
   StreamSubscription<InternetStatus>? _internetStatusSubscription;
 
@@ -36,12 +35,10 @@ class HomeCubit extends Cubit<HomeState> {
     required LocationService locationService,
     required CacheService cacheService,
     required GetProfileUsecase getProfileUsecase,
-    required NotificationsService notificationsService,
   })  : _repository = repository,
         _locationService = locationService,
         _cacheService = cacheService,
         _getProfileUsecase = getProfileUsecase,
-        _notificationsService = notificationsService,
         super(const HomeState(status: HomeStateStatus.initial));
 
   Future<void> init({required User user}) async {

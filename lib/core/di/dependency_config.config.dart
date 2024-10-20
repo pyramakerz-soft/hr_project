@@ -78,12 +78,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i615.GetProfileUsecase(gh<_i283.BaseAuthReposetry>()));
     gh.singleton<_i18.LoginUseCase>(
         () => _i18.LoginUseCase(gh<_i283.BaseAuthReposetry>()));
-    gh.factory<_i883.HomeCubit>(() => _i883.HomeCubit(
-          repository: gh<_i233.HomeRepository>(),
-          locationService: gh<_i984.LocationService>(),
-          cacheService: gh<_i989.CacheService>(),
-          getProfileUsecase: gh<_i615.GetProfileUsecase>(),
-        ));
     gh.factory<_i13.AuthBloc>(() => _i13.AuthBloc(
           gh<_i615.GetProfileUsecase>(),
           gh<_i963.AppPreferences>(),
@@ -93,6 +87,12 @@ extension GetItInjectableX on _i174.GetIt {
           repository: gh<_i233.HomeRepository>(),
           locationService: gh<_i984.LocationService>(),
           cacheService: gh<_i989.CacheService>(),
+        ));
+    gh.factory<_i883.HomeCubit>(() => _i883.HomeCubit(
+          repository: gh<_i233.HomeRepository>(),
+          locationService: gh<_i984.LocationService>(),
+          cacheService: gh<_i989.CacheService>(),
+          getProfileUsecase: gh<_i615.GetProfileUsecase>(),
         ));
     return this;
   }
